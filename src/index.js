@@ -22,8 +22,7 @@ module.exports = {
 
     // Views
     View: views.View,
-    ComponentView: views.ComponentView,
-    TemplatedComponentMixin: views.TemplatedComponentMixin,
+    TemplatedView: views.TemplatedView,
 
     // Mithril
     m: mithril,
