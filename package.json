@@ -1,0 +1,32 @@
+{
+    "author": "Daily Muse Inc",
+    "name": "valyrian",
+    "description": "A minimalistic frontend web framework that builds on Mithril",
+    "version": "0.1.0",
+    
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/dailymuse/valyrian"
+    },
+    
+    "dependencies": {
+        "node-watch": "0.3.4",
+        "mkdirp": "0.5.0",
+        "mithril": "0.1.25",
+        "optimist": "0.6.1",
+        "domhandler": "2.2.0",
+        "htmlparser2": "3.8.0",
+        "uglify-js": "2.4.15",
+        "underscore": "1.7.0",
+        "browserify": "3.46.0"
+    },
+
+    "keywords": [
+        "frameworks",
+        "client",
+        "web",
+        "app"
+    ],
+
+    "license": "MIT"
+}

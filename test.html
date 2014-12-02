@@ -1,0 +1,17 @@
+<if expr="true">
+    <ul>
+        <each expr="users" as="user">
+            <li><val expr="user" /></li>
+        </each>
+    </ul>
+</if>
+<elif expr="false">
+    should never show
+</elif>
+<!-- test -->
+<else>
+    also should never show
+    <raw expr="'<a href=\'#\'></a>'" />
+</else>
+
+<template name="foo" />
