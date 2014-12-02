@@ -1,8 +1,8 @@
 <if expr="true">
     <ul>
-        <each expr="users" as="user">
+        <map expr="controller.users" as="user">
             <li><val expr="user" /></li>
-        </each>
+        </map>
     </ul>
 </if>
 <elif expr="false">
@@ -14,4 +14,6 @@
     <raw expr="'<a href=\'#\'></a>'" />
 </else>
 
+<nbsp count="5" />
+<raw expr="'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'" />
 <template name="foo" />
