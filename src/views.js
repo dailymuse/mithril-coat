@@ -104,5 +104,5 @@ TemplatedView.prototype.render = function(controller) {
 
 module.exports = {
     View: View,
-    ComponentView: ComponentView
+    TemplatedView: TemplatedView
 };
