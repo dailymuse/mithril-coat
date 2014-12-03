@@ -1,3 +1,5 @@
+var mithril = require("mithril");
+
 var map = function(obj, iterator, context) {
     if (obj == null) {
         return results;
