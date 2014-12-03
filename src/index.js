@@ -1,5 +1,6 @@
 var util = require("./util");
 var views = require("./views");
+var controllers = require("./controllers");
 var templates = require("./templates");
 var mithril = require("mithril");
 
@@ -23,6 +24,9 @@ module.exports = {
     // Views
     View: views.View,
     TemplatedView: views.TemplatedView,
+
+    // Controllers
+    Controller: controllers.Controller,
 
     // Mithril
     m: mithril,
