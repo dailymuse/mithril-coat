@@ -16,8 +16,8 @@ module.exports = {
     // Utils
     map: util.map,
     deparam: util.deparam,
-    createApp: util.createApp,
-    initModule: util.initModule,
+    app: util.app,
+    module: util.module,
 
     // Templates
     templates: templates.templates,
@@ -32,7 +32,6 @@ module.exports = {
 
     // Mithril
     m: mithril,
-    module: mithril.module,
     prop: mithril.prop,
     withAttr: mithril.withAttr,
     route: mithril.route,

@@ -48,20 +48,20 @@ var deparam = function(qs) {
 
 // util to create mithril app for mithril module or route (m.route expects an
 // app and not module)
-var createApp = function(viewObj, ctrlObj) {
+var app = function(viewObj, ctrlObj) {
     return {
         controller: ctrlObj,
         view: viewObj.render()
     }
 };
 
-var initModule = function(viewObj, ctrlObj) {
-    m.module(viewObj.$el, createApp(viewObj, ctrlObj))
+var module = function(viewObj, ctrlObj) {
+    m.module(viewObj.$el, app(viewObj, ctrlObj))
 }
 
 module.exports = {
     map: map,
     deparam: deparam,
-    createApp: createApp,
-    initModule: initModule
+    app: app,
+    module: module
 };
