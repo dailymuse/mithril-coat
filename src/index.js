@@ -15,6 +15,8 @@ module.exports = {
     // Utils
     map: util.map,
     deparam: util.deparam,
+    createApp: util.createApp,
+    initModule: util.initModule,
 
     // Templates
     templates: templates.templates,
