@@ -58,7 +58,7 @@ var app = function(viewObj, ctrlObj) {
 };
 
 var module = function(viewObj, ctrlObj) {
-    m.module(viewObj.$el[0], app(viewObj, ctrlObj))
+    mithril.module(viewObj.$el[0], app(viewObj, ctrlObj))
 }
 
 module.exports = {
