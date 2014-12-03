@@ -22,7 +22,7 @@ View.prototype._setOptions = function(options) {
 };
 
 View.prototype.$ = function(selector) {
-    return this.el.find(selector);
+    return this.$el.find(selector);
 };
 
 View.prototype.on = function(eventName, selector, method) {
@@ -44,9 +44,9 @@ View.prototype.on = function(eventName, selector, method) {
     eventName += '.delegateEvents' + this.cid;
 
     if(selector) {
-        this.el.on(eventName, selector, method);
+        this.$el.on(eventName, selector, method);
     } else {
-        this.el.on(eventName, method);
+        this.$el.on(eventName, method);
     }
 
     return this;
@@ -63,9 +63,9 @@ View.prototype.off = function(eventName, selector, method) {
     }
 
     if(selector) {
-        this.el.off(eventName, selector, method);
+        this.$el.off(eventName, selector, method);
     } else {
-        this.el.off(eventName, method);
+        this.$el.off(eventName, method);
     }
 
     return this;
@@ -85,7 +85,7 @@ View.prototype._delegateEvents = function() {
 };
 
 View.prototype._undelegateEvents = function() {
-    this.el.off('.delegateEvents' + this.cid);
+    this.$el.off('.delegateEvents' + this.cid);
     return this;
 };
 
