@@ -6,6 +6,8 @@ var mithril = require("mithril");
 
 var VERSION = "0.1.0";
 
+options = {}
+
 module.exports = {
     // Private variables
     _options: options,
