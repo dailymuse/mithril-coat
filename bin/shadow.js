@@ -224,7 +224,7 @@ function compileFile(inputPath, outputPath, extensions) {
                 if(err) {
                     console.error("Could not compile file `" + inputPath + "`:", err);
                 } else {
-                    var contents = "shadow.registerTemplate(" + JSON.stringify(templateName) + ", " + compiledTemplate + ");\n";
+                    var contents = "shadow.template(" + JSON.stringify(templateName) + ", " + compiledTemplate + ");\n";
                     fs.writeFile(outputPath, contents, function(err) {
                         if(err) {
                             console.error("Could not write compiled contents to `" + outputPath + "`:", err);

@@ -98,8 +98,7 @@ TemplatedView.prototype = Object.create(View.prototype);
 TemplatedView.prototype.constructor = TemplatedView;
 
 TemplatedView.prototype.render = function(controller) {
-    var template = templates.templates[this.templateName];
-    return template(this, controller);
+    return templates.render(this.template, this, controller);
 };
 
 module.exports = {

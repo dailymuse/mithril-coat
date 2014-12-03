@@ -22,8 +22,9 @@ module.exports = {
     module: util.module,
 
     // Templates
-    templates: templates.templates,
-    registerTemplate: templates.registerTemplate,
+    _templates: templates.templates,
+    render: templates.render,
+    template: templates.register,
 
     // Views
     View: views.View,
@@ -39,10 +40,6 @@ module.exports = {
     route: mithril.route,
     request: mithril.request,
     deferred: mithril.deferred,
-    sync: mithril.sync,
-    trust: mithril.trust,
-    render: mithril.render,
-    redraw: mithril.redraw,
     startComputation: mithril.startComputation,
     endComputation: mithril.endComputation,
     deps: mithril.deps
