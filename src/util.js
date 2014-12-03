@@ -46,7 +46,8 @@ var deparam = function(qs) {
     return deparamed;
 };
 
-// util to create mithril app for mithril module or app
+// util to create mithril app for mithril module or route (m.route expects an
+// app and not module)
 var createApp = function(viewObj, ctrlObj) {
     return {
         controller: ctrlObj,
