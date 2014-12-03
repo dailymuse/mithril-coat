@@ -46,7 +46,21 @@ var deparam = function(qs) {
     return deparamed;
 };
 
+// util to create mithril app for mithril module or app
+var createApp = function(viewObj, ctrlObj) {
+    return {
+        controller: ctrlObj,
+        view: viewObj.render()
+    }
+};
+
+var initModule = function(viewObj, ctrlObj) {
+    m.module(viewObj.$el, createApp(viewObj, ctrlObj))
+}
+
 module.exports = {
     map: map,
-    deparam: deparam
+    deparam: deparam,
+    createApp: createApp,
+    initModule: initModule
 };
