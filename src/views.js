@@ -102,6 +102,10 @@ TemplatedView.prototype.render = function(controller) {
     return templates.render(this.template, this, controller);
 };
 
+TemplatedView.prototype.bindController = function(controller) {
+    this.controller = controller;
+};
+
 module.exports = {
     View: View,
     TemplatedView: TemplatedView

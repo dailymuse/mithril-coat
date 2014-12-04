@@ -2,6 +2,7 @@ var util = require("./util");
 var views = require("./views");
 var controllers = require("./controllers");
 var templates = require("./templates");
+var modules = require("./modules");
 var mithril = require("mithril");
 
 var VERSION = "0.1.0";
@@ -15,8 +16,6 @@ module.exports = {
     // Utils
     map: util.map,
     deparam: util.deparam,
-    app: util.app,
-    module: util.module,
 
     // Templates
     _templates: templates.templates,
@@ -29,6 +28,9 @@ module.exports = {
 
     // Controllers
     Controller: controllers.Controller,
+
+    // Module
+    Module: modules.Module,
 
     // Mithril
     m: mithril,

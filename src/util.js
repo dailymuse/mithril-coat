@@ -48,28 +48,7 @@ var deparam = function(qs) {
     return deparamed;
 };
 
-// util to create mithril app for mithril module or route (m.route expects an
-// app and not module)
-var app = function(viewObj, ctrlObj) {
-    var app = {
-        controller: function() { 
-            return ctrlObj 
-        } 
-        , view: function(controller) {
-            return viewObj.render(controller)
-        }
-    }
-    return app
-};
-
-var shadowModule = function(viewObj, ctrlObj) {
-    var module = app(viewObj, ctrlObj)
-    mithril.module(viewObj.$el[0], module)
-}
-
 module.exports = {
     map: map,
-    deparam: deparam,
-    app: app,
-    module: shadowModule
+    deparam: deparam
 };
