@@ -55,8 +55,8 @@ var app = function(viewObj, ctrlObj) {
         controller: function() { 
             return ctrlObj 
         } 
-        , view: function() {
-            return viewObj.render()
+        , view: function(controller) {
+            return viewObj.render(controller)
         }
     }
     return app
