@@ -78,7 +78,7 @@ View.prototype._delegateEvents = function() {
         var match = key.match(delegateEventSplitter);
         var eventName = match[1], selector = match[2];
         var method = this.events[key];
-        this.on(eventName, selector, method);
+        this.$el.on(eventName, selector, method);
     }
 
     return this;
@@ -90,7 +90,7 @@ View.prototype._undelegateEvents = function() {
 };
 
 var TemplatedView = function(options) {
-    this._setOptions(options || {});
+    View.call(this, options)
 };
 
 TemplatedView.prototype = Object.create(View.prototype);

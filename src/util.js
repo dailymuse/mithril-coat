@@ -64,7 +64,6 @@ var app = function(viewObj, ctrlObj) {
 
 var shadowModule = function(viewObj, ctrlObj) {
     var module = app(viewObj, ctrlObj)
-    console.log(module)
     mithril.module(viewObj.$el[0], module)
 }
 
