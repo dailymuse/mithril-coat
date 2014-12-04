@@ -38,13 +38,17 @@ Model.prototype._request = function(method, options) {
         })
 };
 
+Model.prototype.delete = function(options) {
+    this._request("DELETE", options)
+}
+
 Model.prototype.get = function(options) {
-    var opts = this._request("GET", options);
+    this._request("GET", options);
 };
 
 Model.prototype.save = function(options) {
     var requestType = this.id ? "PUT" : "POST"
-    opts = this._request(requestType, options)
+    this._request(requestType, options)
 };
 
 module.exports = {
