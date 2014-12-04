@@ -3,6 +3,7 @@ var views = require("./views");
 var controllers = require("./controllers");
 var templates = require("./templates");
 var modules = require("./modules");
+var model = require("./model");
 var mithril = require("mithril");
 
 var VERSION = "0.1.0";
@@ -31,6 +32,9 @@ module.exports = {
 
     // Module
     Module: modules.Module,
+
+    // Model
+    Model: model.Model,
 
     // Mithril
     m: mithril,
