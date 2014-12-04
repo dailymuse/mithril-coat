@@ -1,5 +1,4 @@
 var mithril = require("mithril");
-var _ = require("underscore");
 
 var Model = function(options) {
     this._setOptions(options || {});
@@ -16,7 +15,7 @@ Model.prototype.xhrConfig = function(xhr) {
 };
 
 Model.prototype._getUrl = function() {
-    return _.isFunction(this.url) ? this.url() : this.url;
+    return typeof this.url === "function" ? this.url() : this.url;
 };
 
 Model.prototype._request = function(method, options) {
@@ -31,10 +30,8 @@ Model.prototype._request = function(method, options) {
 
     mithril.request(requestOpts)
         .then(function(response) {
-            console.log(response)
             options.success(response)
         }, function(error) {
-            console.log(error)
             if(options.error) {options.error(error)}
         })
 };
@@ -43,8 +40,9 @@ Model.prototype.get = function(options) {
     var opts = this._request("GET", options);
 };
 
-Model.prototype.create = function(options) {
-    opts = this._request("POST", options)
+Model.prototype.save = function(options) {
+    var requestType = this.id ? "PUT" : "POST"
+    opts = this._request(requestType, options)
 };
 
 module.exports = {

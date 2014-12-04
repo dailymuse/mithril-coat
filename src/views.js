@@ -1,5 +1,4 @@
 var templates = require("./templates");
-var _ = require('underscore');
 
 // Used to generate a unique view ID
 var uniqueViewId = 0;
@@ -78,7 +77,7 @@ View.prototype._delegateEvents = function() {
     for(var key in this.events) {
         var match = key.match(delegateEventSplitter);
         var eventName = match[1], selector = match[2];
-        var method = _.bind(this[this.events[key]], this);
+        var method = this[this.events[key]].bind(this);
 
         eventName += '.delegateEvents' + this.cid;
 
