@@ -1,5 +1,7 @@
 var mithril = require("mithril");
 
+MITHRIL_REQUEST_OPTS = ["user", "password", "data", "background", "initialValue", "unwrapSuccess", "unwrapError", "serialize", "extract", "type"]
+
 var Model = function(options) {
     this._setOptions(options || {});
 };
@@ -23,7 +25,7 @@ Model.prototype._request = function(method, options) {
     var requestOpts = {method: method, url: url, config: this.xhrConfig};
 
     for(var key in options) {
-        if(key !== "success" || key !== 'error') {
+        if(MITHRIL_REQUEST_OPTS.indexOf(key) !== -1) {
             requestOpts[key] = options[key];
         }
     }
