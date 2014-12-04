@@ -79,9 +79,6 @@ View.prototype._delegateEvents = function() {
         var match = key.match(delegateEventSplitter);
         var eventName = match[1], selector = match[2];
         var method = _.bind(this[this.events[key]], this);
-        console.log(eventName);
-        console.log(selector);
-        console.log(method);
         this.$el.on(eventName, selector, method);
     }
 
