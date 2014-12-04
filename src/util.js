@@ -52,14 +52,19 @@ var deparam = function(qs) {
 // app and not module)
 var app = function(viewObj, ctrlObj) {
     var app = {
-        controller: ctrlObj,
-        view: viewObj.render()
+        controller: function() { 
+            return ctrlObj 
+        } 
+        , view: function() {
+            return viewObj.render()
+        }
     }
     return app
 };
 
 var shadowModule = function(viewObj, ctrlObj) {
     var module = app(viewObj, ctrlObj)
+    console.log(module)
     mithril.module(viewObj.$el[0], module)
 }
 
