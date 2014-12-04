@@ -11,11 +11,11 @@ Module.prototype.controller = function() {
 };
 
 Module.prototype.view = function() {
-    return this._view;
+    return this._view.render();
 };
 
 Module.prototype.activate = function() {
-    return mithril.module(this.view.el[0], this);
+    return mithril.module(this._view.$el[0], this);
 };
 
 module.exports = {

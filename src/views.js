@@ -79,6 +79,9 @@ View.prototype._delegateEvents = function() {
         var match = key.match(delegateEventSplitter);
         var eventName = match[1], selector = match[2];
         var method = _.bind(this[this.events[key]], this);
+
+        eventName += '.delegateEvents' + this.cid;
+
         this.$el.on(eventName, selector, method);
     }
 
@@ -98,8 +101,8 @@ TemplatedView.prototype = Object.create(View.prototype);
 
 TemplatedView.prototype.constructor = TemplatedView;
 
-TemplatedView.prototype.render = function(controller) {
-    return templates.render(this.template, this, controller);
+TemplatedView.prototype.render = function() {
+    return templates.render(this.template, this, this.controller);
 };
 
 TemplatedView.prototype.bindController = function(controller) {
