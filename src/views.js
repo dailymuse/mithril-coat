@@ -17,6 +17,10 @@ View.prototype._setOptions = function(options) {
         this[key] = options[key];
     }
 
+    if(!this.$el) {
+        throw new Error("No $el bound to " + this.constructor.name + " - view can't bind events");
+    }
+
     this.options = options;
     this.cid = 'view' + (uniqueViewId++);
 };

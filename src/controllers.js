@@ -6,6 +6,12 @@ var Controller = function(models) {
     }
 };
 
+Controller.prototype.setProps = function(obj) {
+    for(var key in obj) {
+        this[key](obj[key])
+    }
+};
+
 module.exports = {
     Controller: Controller
 };
