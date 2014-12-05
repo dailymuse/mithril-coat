@@ -6,6 +6,7 @@ var Controller = function(models) {
     }
 };
 
+// assumes that the obj keys have been set with mithril prop previously
 Controller.prototype.setProps = function(obj) {
     for(var key in obj) {
         this[key](obj[key])
