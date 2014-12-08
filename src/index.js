@@ -15,7 +15,6 @@ module.exports = {
     version: VERSION,
 
     // Utils
-    map: util.map,
     deparam: util.deparam,
 
     // Templates

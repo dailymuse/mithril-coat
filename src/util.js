@@ -1,25 +1,3 @@
-var map = function(obj, iterator, context) {
-    if (obj == null) {
-        return results;
-    } else if (Array.prototype.map && obj.map === Array.prototype.map) {
-        return obj.map(iterator, context);
-    } else {
-        var results = [];
-
-        if(obj.length === +obj.length) {
-            for(var i=0; i<obj.length; i++) {
-                results.push(iterator.call(context, obj[i], i, obj));
-            }
-        } else {
-            for(var key in obj) {
-                results.push(iterator.call(context, obj[key], key, obj));
-            }
-        }
-
-        return results;
-    }
-};
-
 var deparam = function(qs) {
     if(qs.length && qs.indexOf(0) == "?") {
         qs = qs.substring(1);
@@ -47,6 +25,5 @@ var deparam = function(qs) {
 };
 
 module.exports = {
-    map: map,
     deparam: deparam
 };
