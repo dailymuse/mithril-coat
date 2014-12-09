@@ -1,6 +1,16 @@
 var mithril = require("mithril");
 
-var Controller = function(models) {
+var Controller = function(obj) {
+    for(var key in obj) {
+        if(key === "props") {
+            this._createProps(obj[key]);
+        } else {
+            this[key] = obj[key];
+        }
+    }
+};
+
+Controller.prototype._createProps = function(models) {
     for(var key in models) {
         this[key] = mithril.prop(models[key]);
     }

@@ -32,14 +32,14 @@ Model.prototype._request = function(method, options) {
 
     mithril.request(requestOpts)
         .then(function(response) {
-            options.success(response)
+            options.success(response);
         }, function(error) {
-            if(options.error) {options.error(error)}
+            if(options.error) { options.error(error); }
         })
 };
 
 Model.prototype.delete = function(options) {
-    this._request("DELETE", options)
+    this._request("DELETE", options);
 }
 
 Model.prototype.get = function(options) {
@@ -47,8 +47,8 @@ Model.prototype.get = function(options) {
 };
 
 Model.prototype.save = function(options) {
-    var requestType = this.id ? "PUT" : "POST"
-    this._request(requestType, options)
+    var requestType = this.id ? "PUT" : "POST";
+    this._request(requestType, options);
 };
 
 module.exports = {
