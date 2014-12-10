@@ -15,6 +15,7 @@ module.exports = {
     version: VERSION,
 
     // Utils
+    map: util.map,
     deparam: util.deparam,
 
     // Templates
@@ -42,7 +43,6 @@ module.exports = {
     route: mithril.route,
     request: mithril.request,
     deferred: mithril.deferred,
-    redraw: mithril.redraw,
     startComputation: mithril.startComputation,
     endComputation: mithril.endComputation,
     deps: mithril.deps
