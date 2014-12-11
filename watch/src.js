@@ -19,32 +19,41 @@ var argv = require("optimist")
 
     .argv;
 
-function run(argv) {
-    if(argv._.length < 2) {
+function Directify(options) {
+    options = options || {};
+
+    this.argv = options.argv;
+    this._run()
+}
+
+Directify.prototype._run = function() {
+    var self = this;
+    if(this.argv._.length < 2) {
         console.error("Input and output file/directory arguments required");
         process.exit(-1);
     }
 
-    var input = argv._[0];
-    var output = argv._[1];
+    this.inputDir = this.argv._[0];
+    this.outputDir = this.argv._[1];
 
-    if(!fs.existsSync(input)) {
-        console.error("File does not exist:", input);
+    if(!fs.existsSync(this.inputDir)) {
+        console.error("Input file does not exist:", this.inputDir);
         process.exit(1);
     }
 
     // ignoring .ds_store files
-    var watcher = chokidar.watch(input, { ignored: /\.DS_Store/ });
+    var watcher = chokidar.watch(this.inputDir, { ignored: /\.DS_Store/ });
 
     watcher.on("add", function(inputPath) {
-        addPath(input, inputPath, output);
+        self._addPath(inputPath);
     });
 }
 
-function addPath(input, inputFile, output) {
-    var outputFile = replaceExtension(path.join(output, path.relative(input, inputFile)), ".coffee", ".js");
+Directify.prototype._addPath = function(inputPath) {
+    var self = this;
+    var outputPath = this._replaceExtension(path.join(this.outputDir, path.relative(this.inputDir, inputPath)), ".coffee", ".js");
 
-    var parentDirectoryPath = path.join(outputFile, "..");
+    var parentDirectoryPath = path.join(outputPath, "..");
 
     mkdirp(parentDirectoryPath, function(err) {
         if(err) {
@@ -52,19 +61,20 @@ function addPath(input, inputFile, output) {
             return;
         }
 
-        watchifyFile(inputFile, outputFile);
+        self._watchifyFile(inputPath, outputPath);
     });
 }
 
-function replaceExtension(filepath, expectedExtension, newExtension) {
+Directify.prototype._replaceExtension = function(filepath, expectedExtension, newExtension) {
     var dirpath = path.dirname(filepath);
     var filename = path.basename(filepath, expectedExtension) + newExtension;
     return path.join(dirpath, filename);
 }
 
-function watchifyFile(inputPath, outputPath) {
+Directify.prototype._watchifyFile = function(inputPath, outputPath) {
     console.log('input path: ' + inputPath);
     console.log('output path: ' + outputPath);
+    var self = this;
 
     var b = browserify({
         cache: {},
@@ -74,22 +84,22 @@ function watchifyFile(inputPath, outputPath) {
     b = watchify(b);
     b.on('update', function(){
         console.log(outputPath);
-        bundleShare(b, outputPath);
+        self._bundleShare(b, outputPath);
     });
 
     b.add(inputPath);
     b.transform(coffeeify);
     console.log('applied transform');
-    bundleShare(b, outputPath);
+    this._bundleShare(b, outputPath);
     return b;
 }
 
-function bundleShare(b, outputPath) {
+Directify.prototype._bundleShare = function(b, outputPath) {
     console.log('bundling')
     b.bundle()
         .pipe(fs.createWriteStream(outputPath));
 }
 
-run(argv)
+new Directify({argv: argv});
 
 
