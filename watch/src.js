@@ -28,6 +28,7 @@ function Directify(options) {
 
 Directify.prototype._run = function() {
     var self = this;
+
     if(this.argv._.length < 2) {
         console.error("Input and output file/directory arguments required");
         process.exit(-1);
@@ -43,7 +44,6 @@ Directify.prototype._run = function() {
 
     // ignoring .ds_store files
     var watcher = chokidar.watch(this.inputDir, { ignored: /\.DS_Store/ });
-
     watcher.on("add", function(inputPath) {
         self._addPath(inputPath);
     });
@@ -72,34 +72,25 @@ Directify.prototype._replaceExtension = function(filepath, expectedExtension, ne
 }
 
 Directify.prototype._watchifyFile = function(inputPath, outputPath) {
-    console.log('input path: ' + inputPath);
-    console.log('output path: ' + outputPath);
-    var self = this;
-
     var b = browserify({
         cache: {},
         packageCache: {},
         fullPaths: true
     });
     b = watchify(b);
-    b.on('update', function(){
-        console.log(outputPath);
-        self._bundleShare(b, outputPath);
-    });
+    b.on('update', this._bundleShare);
 
     b.add(inputPath);
     b.transform(coffeeify);
-    console.log('applied transform');
     this._bundleShare(b, outputPath);
     return b;
 }
 
 Directify.prototype._bundleShare = function(b, outputPath) {
     console.log('bundling')
+    console.log(outputPath);
     b.bundle()
         .pipe(fs.createWriteStream(outputPath));
 }
 
 new Directify({argv: argv});
-
-
