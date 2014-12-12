@@ -43,6 +43,7 @@ module.exports = {
     route: mithril.route,
     request: mithril.request,
     deferred: mithril.deferred,
+    autoredraw: mithril.autoredraw,
     startComputation: mithril.startComputation,
     endComputation: mithril.endComputation,
     deps: mithril.deps
