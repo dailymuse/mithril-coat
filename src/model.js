@@ -8,19 +8,12 @@ var Model = function(options) {
 
 Model.prototype._setOptions = function(options) {
     for(var key in options) {
-        if(key === "props") {
-            this._createProps(options[key]);
-        } else {
-            this[key] = options[key];
-        }
+        this[key] = mithril.prop(options[key]);
     }
 };
 
-// create model mithril properties
-Model.prototype._createProps = function(models) {
-    for(var key in models) {
-        this[key] = mithril.prop(models[key]);
-    }
+Model.prototype.setProps = function(obj) {
+    this._updateProps(obj);
 };
 
 // update model mithril properties 
@@ -63,7 +56,7 @@ Model.prototype._request = function(method, options) {
         .then(function(response) {
             self._updateProps(response);
             options.success(response);
-        }, function(error) {
+        }, function(error) {    
             if(options.error) { options.error(error); }
         })
 };
