@@ -16,6 +16,18 @@ Controller.prototype._setOptions = function(options) {
     }
 };
 
+// auto redraw is a wrapper around mithrils start and end computation
+// for redrawing a view
+Controller.prototype.autoredraw = function(cb, opts) {
+    mithril.startComputation();
+    try {   
+        cb(opts);
+    }
+    finally {
+        mithril.endComputation();
+    }
+};
+
 module.exports = {
     Controller: Controller
 };
