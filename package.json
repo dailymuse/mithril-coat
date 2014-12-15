@@ -10,7 +10,6 @@
   "dependencies": {
     "browserify": "4.2.3",
     "chokidar": "^0.12.1",
-    "coffeeify": "^1.0.0",
     "domhandler": "2.2.0",
     "htmlparser2": "3.8.0",
     "mithril": "0.1.25",
@@ -18,8 +17,7 @@
     "node-watch": "0.3.4",
     "optimist": "0.6.1",
     "uglify-js": "2.4.15",
-    "underscore": "1.7.0",
-    "watchify": "^2.1.1"
+    "underscore": "1.7.0"
   },
   "keywords": [
     "frameworks",
