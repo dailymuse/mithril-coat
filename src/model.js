@@ -8,10 +8,34 @@ var Model = function(options) {
 
 Model.prototype._setOptions = function(options) {
     for(var key in options) {
-        this[key] = options[key];
+        if(key === "props") {
+            this._createProps(options[key]);
+        } else {
+            this[key] = options[key];
+        }
     }
 };
 
+// create model mithril properties
+Model.prototype._createProps = function(models) {
+    for(var key in models) {
+        this[key] = mithril.prop(models[key]);
+    }
+};
+
+// update model mithril properties 
+Model.prototype._updateProps = function(model) {
+    for(var key in model) {
+        if(this[key]) {
+            this[key](model[key]);
+        } else {
+            this[key] = mithril.prop(model[key]);
+        }
+    }
+};
+
+// function to extend that allows you set xhrconfig status for all
+// mithril requests
 Model.prototype.xhrConfig = function(xhr) {
     return 
 };
@@ -24,8 +48,9 @@ Model.prototype._getUrl = function() {
 };
 
 Model.prototype._request = function(method, options) {
-    var url = this._getUrl();
-    var requestOpts = {method: method, url: url, config: this.xhrConfig};
+    var self = this,
+        url = this._getUrl(),
+        requestOpts = {method: method, url: url, config: this.xhrConfig};
 
     for(var key in options) {
         if(MITHRIL_REQUEST_OPTS.indexOf(key) !== -1) {
@@ -33,8 +58,10 @@ Model.prototype._request = function(method, options) {
         }
     }
 
+    // make request and update model props
     mithril.request(requestOpts)
         .then(function(response) {
+            self._updateProps(response);
             options.success(response);
         }, function(error) {
             if(options.error) { options.error(error); }
@@ -43,7 +70,7 @@ Model.prototype._request = function(method, options) {
 
 Model.prototype.delete = function(options) {
     this._request("DELETE", options);
-}
+};
 
 Model.prototype.get = function(options) {
     this._request("GET", options);
