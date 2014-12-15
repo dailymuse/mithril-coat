@@ -16,6 +16,9 @@ Model.prototype.xhrConfig = function(xhr) {
     return 
 };
 
+// allow url to be set as property on Model object or as a function 
+// useful if need to conditionally set url based on variables passed into
+// model
 Model.prototype._getUrl = function() {
     return typeof this.url === "function" ? this.url() : this.url;
 };

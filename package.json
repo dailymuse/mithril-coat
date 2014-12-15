@@ -9,7 +9,6 @@
   },
   "dependencies": {
     "browserify": "4.2.3",
-    "chokidar": "^0.12.1",
     "domhandler": "2.2.0",
     "htmlparser2": "3.8.0",
     "mithril": "0.1.25",
