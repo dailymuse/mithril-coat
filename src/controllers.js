@@ -1,13 +1,7 @@
 var mithril = require("mithril");
 
 var Controller = function(obj) {
-    for(var key in obj) {
-        if(key === "props") {
-            this._createProps(obj[key]);
-        } else {
-            this[key] = obj[key];
-        }
-    }
+    this._setOptions(obj);
 };
 
 Controller.prototype._setOptions = function(options) {

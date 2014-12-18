@@ -1,5 +1,3 @@
-var templates = require("./templates");
-
 // Used to generate a unique view ID
 var uniqueViewId = 0;
 
@@ -105,7 +103,7 @@ TemplatedView.prototype = Object.create(View.prototype);
 TemplatedView.prototype.constructor = TemplatedView;
 
 TemplatedView.prototype.render = function() {
-    return templates.render(this.template, this, this.controller);
+    return this.template(this, this.controller);
 };
 
 TemplatedView.prototype.bindController = function(controller) {

@@ -1,7 +1,6 @@
 var util = require("./util");
 var views = require("./views");
 var controllers = require("./controllers");
-var templates = require("./templates");
 var modules = require("./modules");
 var model = require("./model");
 var mithril = require("mithril");
@@ -17,11 +16,6 @@ module.exports = {
     // Utils
     map: util.map,
     deparam: util.deparam,
-
-    // Templates
-    _templates: templates.templates,
-    render: templates.render,
-    template: templates.register,
 
     // Views
     View: views.View,
