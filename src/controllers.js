@@ -20,10 +20,10 @@ Controller.prototype._setOptions = function(options) {
 // for redrawing a view
 Controller.prototype.autoredraw = function(cb, opts) {
     mithril.startComputation();
-    try {   
-        cb(opts);
-    }
-    finally {
+
+    try {
+        cb.bind(this)(opts);
+    } finally {
         mithril.endComputation();
     }
 };
