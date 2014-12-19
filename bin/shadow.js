@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var sys = require("sys");
 var fs = require("fs");
 var watch = require("node-watch");

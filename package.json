@@ -3,6 +3,10 @@
   "name": "valyrian",
   "description": "A minimalistic frontend web framework that builds on Mithril",
   "version": "0.1.0",
+  "main": "lib/index.js",
+  "bin": {
+    "shadow": "bin/shadow.js"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/dailymuse/valyrian"
@@ -22,9 +26,12 @@
     "frameworks",
     "client",
     "web",
-    "app"
+    "app",
+    "mithril"
   ],
-  "license": "MIT",
+  "author": "The Muse <yusuf@themuse.com> (https://www.themuse.com/)",
+  "homepage": "https://github.com/dailymuse/shadow",
+  "license": "BSD",
   "devDependencies": {
     "qunitjs": "^1.16.0"
   }

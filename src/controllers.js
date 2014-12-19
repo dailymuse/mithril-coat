@@ -22,6 +22,11 @@ Controller.prototype.autoredraw = function(cb, opts) {
     }
 };
 
+// bind view to controller - by default the class name will be used 
+Controller.prototype.bindView = function(view) {
+    this[view.constructor.name] = view;
+}
+
 module.exports = {
     Controller: Controller
 };

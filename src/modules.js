@@ -2,6 +2,7 @@ var mithril = require("mithril");
 
 var Module = function(controller, view) {
     this._controller = controller;
+    this._controller.bindView(view);
     this._view = view;
     this._view.bindController(controller);
 };
