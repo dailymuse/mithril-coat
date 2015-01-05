@@ -11,10 +11,16 @@ To install the front-end package via bower `bower install mithril-coat`.
 ## Usage
 Mithril Coat exposes its api via the global `coat` variable.
 
+### Modules
+coat.Modules is an object that contains references to a coat.View and a coat.Controller. 
+
+#### coat.Module.activate()
+Instantiates a mithril module. 
+
 ### View
 coat.View is a stripped down version of Backbone.View and is meant to be used with existing HTML elements.
 
-#### var coatView = new coat.View({ $el: $elt, events: {} })
+#### new coat.View({ $el: $elt, events: {} })
 Expects a jquery object as it's $el. If an events hash is provided, then the view uses event delegation on the $el.
 
 The events object is similar to Backbones event objects:
@@ -32,6 +38,9 @@ binds an event on the $el with the corresponding method.
 
 #### coatView.off(eventName, selector, method)
 distaches an event that was previously bound to the view.
+
+### TemplatedView
+coat.TemplatedView is a mithril view that extends from coat.View as well as methods used for rendering mithril modules.
 
 ### Utils
 ###$ coat.map()
