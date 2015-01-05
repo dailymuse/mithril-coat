@@ -1,0 +1,38 @@
+{
+  "name": "mithril-coat",
+  "description": "\"A minimalistic frontend web framework that builds on Mithril\"",
+  "version": "0.1.0",
+  "homepage": "https://github.com/dailymuse/mithril-coat",
+  "authors": [
+    "The Muse <yusuf@themuse.com> (https://www.themuse.com/)"
+  ],
+  "keywords": [
+    "mithril",
+    "web",
+    "frameworks",
+    "client",
+    "mvc"
+  ],
+  "main": [
+    "build/coat.js",
+    "build/coat.min.js",
+    "build/coat.min.map"
+  ],
+  "license": "BSD",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "Makefile"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/dailymuse/mithril-coat.git"
+  },
+  "dependencies": {
+    "jquery": ">= 1.9.1"
+  }
+}

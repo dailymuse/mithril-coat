@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/dailymuse/valyrian"
+    "url": "git://github.com/dailymuse/mithril-coat.git"
   },
   "dependencies": {
     "browserify": "4.2.3",
@@ -33,10 +33,11 @@
     "client",
     "web",
     "app",
-    "mithril"
+    "mithril",
+    "mvc"
   ],
   "author": "The Muse <yusuf@themuse.com> (https://www.themuse.com/)",
-  "homepage": "https://github.com/dailymuse/shadow",
+  "homepage": "https://github.com/dailymuse/mithril-coat",
   "license": "BSD",
   "devDependencies": {
     "qunitjs": "^1.16.0"
