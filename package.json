@@ -1,11 +1,17 @@
 {
   "author": "Daily Muse Inc",
-  "name": "valyrian",
+  "name": "mithril-coat",
   "description": "A minimalistic frontend web framework that builds on Mithril",
   "version": "0.1.0",
   "main": "lib/index.js",
   "bin": {
-    "shadow": "bin/shadow.js"
+    "coat": "bin/coat.js"
+  },
+  "scripts": {
+    "build": "browserify src/index.js -o build/coat.js -s coat",
+
+    "prebuild": "mkdir -p build",
+    "postbuild": "cd build && uglifyjs coat.js -o coat.min.js --source-map coat.min.map"
   },
   "repository": {
     "type": "git",

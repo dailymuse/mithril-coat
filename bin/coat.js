@@ -4,13 +4,13 @@ var sys = require("sys");
 var fs = require("fs");
 var watch = require("node-watch");
 var path = require("path");
-var shadow = require("../lib");
+var coat = require("../lib");
 var mkdirp = require("mkdirp");
 var util = require("util");
 var _ = require("underscore");
 
 var argv = require("optimist")
-    .usage("Compiles shadow templates")
+    .usage("Compiles coat templates")
 
     .options("v", {
         alias: "version",
@@ -222,7 +222,7 @@ function compileFile(inputPath, outputPath, extensions) {
         } else {
             var opts = _.defaults({ extensions: extensions || [] }, COMPILER_OPTIONS);
 
-            shadow.compile(templateContents, opts, function(err, compiledTemplate) {
+            coat.compile(templateContents, opts, function(err, compiledTemplate) {
                 if(err) {
                     console.error("Could not compile file `" + inputPath + "`:", err);
                 } else {

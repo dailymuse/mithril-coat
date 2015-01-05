@@ -4,7 +4,7 @@ var uniqueViewId = 0;
 // Cached regex to split keys for `delegate`.
 var delegateEventSplitter = /^(\S+)\s*(.*)$/;
 
-// Shadow.View. Basically a stripped-down version of Backbone.View.
+// Coat.View. Basically a stripped-down version of Backbone.View.
 var View = function(options) {
     this._setOptions(options || {});
     this._delegateEvents();
