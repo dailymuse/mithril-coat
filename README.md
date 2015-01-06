@@ -3,8 +3,10 @@ Mithril coat is a lightweight wrapper around mithril that aims to provide some s
 
 The only requirement for mithril coat is jQuery (although this may change in the future).
 
+# Mithril Coat is under active development.
+
 ## Install
-To install the template compiler `npm install mithril-coat`.
+To install the template compiler `npm install mithril-coat -g`.
 
 To install the front-end package via bower `bower install mithril-coat`.
 
