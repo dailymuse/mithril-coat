@@ -19,6 +19,7 @@
     "build/coat.min.map"
   ],
   "license": "BSD",
+  "private": false,
   "ignore": [
     "**/.*",
     "node_modules",
