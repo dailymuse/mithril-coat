@@ -986,11 +986,18 @@ if (typeof module != "undefined" && module !== null && module.exports) module.ex
 else if (typeof define == "function" && define.amd) define(function() {return m});
 
 },{}],2:[function(_dereq_,module,exports){
-var mithril = _dereq_("mithril");
+var mithril = _dereq_("mithril"),
+    events = _dereq_("./event");
 
 var Controller = function(obj) {
+    events.Events.call(this);
+
     this._setOptions(obj);
 };
+
+Controller.prototype = Object.create(events.Events.prototype);
+
+Controller.prototype.constructor = Controller;
 
 Controller.prototype._setOptions = function(options) {
     for(var key in options) {
@@ -1010,22 +1017,155 @@ Controller.prototype.autoredraw = function(cb, opts) {
     }
 };
 
-// bind view to controller - by default the class name will be used 
-Controller.prototype.bindView = function(view) {
-    this[view.constructor.name] = view;
-}
-
 module.exports = {
     Controller: Controller
 };
 
-},{"mithril":1}],3:[function(_dereq_,module,exports){
-var util = _dereq_("./util");
-var views = _dereq_("./views");
-var controllers = _dereq_("./controllers");
-var modules = _dereq_("./modules");
-var model = _dereq_("./model");
-var mithril = _dereq_("mithril");
+},{"./event":3,"mithril":1}],3:[function(_dereq_,module,exports){
+var eventSplitter = /\s+/;
+
+// Backbone events repurposed for Mithril Coat
+var Events = function() {}
+
+// Bind an event to a `callback` function. Passing `"all"` will bind
+// the callback to all events fired.
+Events.prototype.on = function(name, callback, context) {
+    if (!this._eventsApi(this, 'on', name, [callback, context]) || !callback) return this;
+    this._events || (this._events = {});
+    var events = this._events[name] || (this._events[name] = []);
+    events.push({callback: callback, context: context, ctx: context || this});
+    return this;
+};
+
+// Bind an event to only be triggered a single time. After the first time
+// the callback is invoked, it will be removed.
+Events.prototype.once = function(name, callback, context) {
+    if (!this._eventsApi(this, 'once', name, [callback, context]) || !callback) return this;
+    var self = this;
+    var once = _.once(function() {
+        self.off(name, once);
+        callback.apply(this, arguments);
+    });
+    once._callback = callback;
+    return this.on(name, once, context);
+};
+
+// Remove one or many callbacks. If `context` is null, removes all
+// callbacks with that function. If `callback` is null, removes all
+// callbacks for the event. If `name` is null, removes all bound
+// callbacks for all events.
+Events.prototype.off = function(name, callback, context) {
+    if (!this._events || !this._eventsApi(this, 'off', name, [callback, context])) return this;
+
+    // Remove all callbacks for all events.
+    if (!name && !callback && !context) {
+        this._events = void 0;
+        return this;
+    }
+
+    var names = name ? [name] : Object.keys(this._events);
+    for (var i = 0, length = names.length; i < length; i++) {
+        name = names[i];
+
+        // Bail out if there are no events stored.
+        var events = this._events[name];
+        if (!events) continue;
+
+        // Remove all callbacks for this event.
+        if (!callback && !context) {
+            delete this._events[name];
+            continue;
+        }
+
+        // Find any remaining events.
+        var remaining = [];
+        for (var j = 0, k = events.length; j < k; j++) {
+            var event = events[j];
+            if (
+                callback && callback !== event.callback &&
+                callback !== event.callback._callback ||
+                context && context !== event.context
+            ) {
+                remaining.push(event);
+            }
+        }
+
+        // Replace events if there are any remaining.  Otherwise, clean up.
+        if (remaining.length) {
+            this._events[name] = remaining;
+        } else {
+            delete this._events[name];
+        }
+    }
+
+    return this;
+};
+
+// Trigger one or many events, firing all bound callbacks. Callbacks are
+// passed the same arguments as `trigger` is, apart from the event name
+// (unless you're listening on `"all"`, which will cause your callback to
+// receive the true name of the event as the first argument).
+Events.prototype.trigger = function(name) {
+    if (!this._events) return this;
+    var args = [].slice.call(arguments, 1);
+    if (!this._eventsApi(this, 'trigger', name, args)) return this;
+    var events = this._events[name];
+    var allEvents = this._events.all;
+    if (events) this._triggerEvents(events, args);
+    if (allEvents) this._triggerEvents(allEvents, arguments);
+    return this;
+};
+
+Events.prototype._eventsApi = function(obj, action, name, rest) {
+    if (!name) return true;
+
+    // Handle event maps.
+    if (typeof name === 'object') {
+        for (var key in name) {
+            obj[action].apply(obj, [key, name[key]].concat(rest));
+        }
+        return false;
+    }
+
+    // Handle space separated event names.
+    if (eventSplitter.test(name)) {
+        var names = name.split(eventSplitter);
+        for (var i = 0, length = names.length; i < length; i++) {
+            obj[action].apply(obj, [names[i]].concat(rest));
+        }
+        return false;
+    }
+
+    return true;
+};
+
+// A difficult-to-believe, but optimized internal dispatch function for
+// triggering events. Tries to keep the usual cases speedy (most internal
+// Backbone events have 3 arguments).
+Events.prototype._triggerEvents = function(events, args) {
+    var ev, i = -1, l = events.length, a1 = args[0], a2 = args[1], a3 = args[2];
+    // TODO SEE IF THIS OPTIMIZED FOR MITHRIL NOT BACKBONE
+    switch (args.length) {
+        case 0: while (++i < l) (ev = events[i]).callback.call(ev.ctx); return;
+        case 1: while (++i < l) (ev = events[i]).callback.call(ev.ctx, a1); return;
+        case 2: while (++i < l) (ev = events[i]).callback.call(ev.ctx, a1, a2); return;
+        case 3: while (++i < l) (ev = events[i]).callback.call(ev.ctx, a1, a2, a3); return;
+        default: while (++i < l) (ev = events[i]).callback.apply(ev.ctx, args); return;
+    }
+};
+
+module.exports = {
+    Events: Events
+};
+
+},{}],4:[function(_dereq_,module,exports){
+var util = _dereq_("./util"),
+    views = _dereq_("./views"),
+    controllers = _dereq_("./controllers"),
+    modules = _dereq_("./modules"),
+    model = _dereq_("./model"),
+    router = _dereq_("./router"),
+    mithril = _dereq_("mithril");
 
 var VERSION = "0.1.0";
 
@@ -1052,6 +1192,9 @@ module.exports = {
     // Model
     Model: model.Model,
 
+    // Router
+    Router: router.Router,
+
     // Mithril
     m: mithril,
     prop: mithril.prop,
@@ -1065,7 +1208,7 @@ module.exports = {
     deps: mithril.deps
 };
 
-},{"./controllers":2,"./model":4,"./modules":5,"./util":6,"./views":7,"mithril":1}],4:[function(_dereq_,module,exports){
+},{"./controllers":2,"./model":5,"./modules":6,"./router":7,"./util":8,"./views":9,"mithril":1}],5:[function(_dereq_,module,exports){
 var mithril = _dereq_("mithril");
 
 MITHRIL_REQUEST_OPTS = ["user", "password", "data", "background", "initialValue", "unwrapSuccess", "unwrapError", "serialize", "extract", "type"]
@@ -1145,22 +1288,25 @@ Model.prototype.save = function(options) {
 module.exports = {
     Model: Model
 };
-},{"mithril":1}],5:[function(_dereq_,module,exports){
-var mithril = _dereq_("mithril");
+},{"mithril":1}],6:[function(_dereq_,module,exports){
+var mithril = _dereq_("mithril"),
+    events = _dereq_("./event");
 
 var Module = function(controller, view) {
     this._controller = controller;
-    this._controller.bindView(view);
     this._view = view;
-    this._view.bindController(controller);
+
+    this.setEvents();
 };
 
+// TO DO FIGURE OUT HOW TO PASS STATE HERE
 Module.prototype.controller = function() {
     return this._controller;
 };
 
-Module.prototype.view = function() {
-    return this._view.render();
+Module.prototype.view = function(ctrl) {
+    console.log(this._controller)
+    return this._view.render(this._controller.state);
 };
 
 Module.prototype.activate = function() {
@@ -1171,7 +1317,46 @@ module.exports = {
     Module: Module
 };
 
-},{"mithril":1}],6:[function(_dereq_,module,exports){
+},{"./event":3,"mithril":1}],7:[function(_dereq_,module,exports){
+var events = _dereq_("./event"),
+    mithril = _dereq_("mithril");
+
+var Router = function(options) {
+    events.Events.call(this);
+
+    this._setOptions(options || {});
+    this._route();
+}
+
+Router.prototype = Object.create(events.Events.prototype);
+
+Router.prototype.constructor = Router;
+
+Router.prototype._setOptions = function(options) {
+    for(var key in options) {
+        this[key] = options[key];
+    }
+
+    if(!this.routes) {
+        throw new Error("No routes specified for " + this.constructor.name + "router.");
+    }
+
+    this.options = options;
+
+    if (this.mode === "pathname") {
+        this.root = "/";
+    }
+
+};
+
+Router.prototype._route = function() {
+    mithril.route(this.rootElt, this.root, this.routes)
+};
+
+module.exports = {
+    Router: Router
+}
+},{"./event":3,"mithril":1}],8:[function(_dereq_,module,exports){
 var map = function(obj, iterator, context) {
     if (obj == null) {
         return results;
@@ -1225,7 +1410,9 @@ module.exports = {
     deparam: deparam
 };
 
-},{}],7:[function(_dereq_,module,exports){
+},{}],9:[function(_dereq_,module,exports){
+var events = _dereq_("./event");
+
 // Used to generate a unique view ID
 var uniqueViewId = 0;
 
@@ -1234,9 +1421,15 @@ var delegateEventSplitter = /^(\S+)\s*(.*)$/;
 
 // Coat.View. Basically a stripped-down version of Backbone.View.
 var View = function(options) {
+    events.Events.call(this);
+
     this._setOptions(options || {});
     this._delegateEvents();
 };
+
+View.prototype = Object.create(events.Events.prototype);
+
+View.prototype.constructor = View;
 
 View.prototype._setOptions = function(options) {
     for(var key in options) {
@@ -1255,7 +1448,8 @@ View.prototype.$ = function(selector) {
     return this.$el.find(selector);
 };
 
-View.prototype.on = function(eventName, selector, method) {
+View.prototype.addEvent = function(eventName, selector, method) {
+    console.log('on')
     if(arguments.length == 2) {
         method = selector;
         selector = null;
@@ -1282,7 +1476,7 @@ View.prototype.on = function(eventName, selector, method) {
     return this;
 };
 
-View.prototype.off = function(eventName, selector, method) {
+View.prototype.removeEvent = function(eventName, selector, method) {
     if(arguments.length == 2) {
         method = selector;
         selector = null;
@@ -1305,13 +1499,15 @@ View.prototype._delegateEvents = function() {
     this._undelegateEvents();
 
     for(var key in this.events) {
-        var match = key.match(delegateEventSplitter);
-        var eventName = match[1], selector = match[2];
-        var method = this[this.events[key]].bind(this);
+        var match = key.match(delegateEventSplitter),
+            eventName = match[1], 
+            selector = match[2],
+            method = this[this.events[key]].bind(this);
 
-        eventName += '.delegateEvents' + this.cid;
+        // eventName += '.delegateEvents' + this.cid;
 
-        this.$el.on(eventName, selector, method);
+        this.addEvent(eventName, selector, method);
+        // this.$el.on(eventName, selector, method);
     }
 
     return this;
@@ -1323,26 +1519,26 @@ View.prototype._undelegateEvents = function() {
 };
 
 var TemplatedView = function(options) {
-    View.call(this, options)
+    View.call(this, options);
 };
 
 TemplatedView.prototype = Object.create(View.prototype);
 
 TemplatedView.prototype.constructor = TemplatedView;
 
-TemplatedView.prototype.render = function() {
-    return this.template(this, this.controller);
+TemplatedView.prototype.render = function(state) {
+    return this.template(this, state);
 };
 
-TemplatedView.prototype.bindController = function(controller) {
-    this.controller = controller;
-};
+// TemplatedView.prototype.bindState = function(state) {
+//     this.state = state;
+// };
 
 module.exports = {
     View: View,
     TemplatedView: TemplatedView
 };
 
-},{}]},{},[3])
-(3)
+},{"./event":3}]},{},[4])
+(4)
 });

@@ -1,18 +1,21 @@
-var mithril = require("mithril");
+var mithril = require("mithril"),
+    events = require("./event");
 
 var Module = function(controller, view) {
     this._controller = controller;
-    this._controller.bindView(view);
     this._view = view;
-    this._view.bindController(controller);
+
+    this.setEvents();
 };
 
+// TO DO FIGURE OUT HOW TO PASS STATE HERE
 Module.prototype.controller = function() {
     return this._controller;
 };
 
-Module.prototype.view = function() {
-    return this._view.render();
+Module.prototype.view = function(ctrl) {
+    console.log(this._controller)
+    return this._view.render(this._controller.state);
 };
 
 Module.prototype.activate = function() {

@@ -1,3 +1,5 @@
+var events = require("./event");
+
 // Used to generate a unique view ID
 var uniqueViewId = 0;
 
@@ -6,9 +8,15 @@ var delegateEventSplitter = /^(\S+)\s*(.*)$/;
 
 // Coat.View. Basically a stripped-down version of Backbone.View.
 var View = function(options) {
+    events.Events.call(this);
+
     this._setOptions(options || {});
     this._delegateEvents();
 };
+
+View.prototype = Object.create(events.Events.prototype);
+
+View.prototype.constructor = View;
 
 View.prototype._setOptions = function(options) {
     for(var key in options) {
@@ -27,7 +35,8 @@ View.prototype.$ = function(selector) {
     return this.$el.find(selector);
 };
 
-View.prototype.on = function(eventName, selector, method) {
+View.prototype.addEvent = function(eventName, selector, method) {
+    console.log('on')
     if(arguments.length == 2) {
         method = selector;
         selector = null;
@@ -54,7 +63,7 @@ View.prototype.on = function(eventName, selector, method) {
     return this;
 };
 
-View.prototype.off = function(eventName, selector, method) {
+View.prototype.removeEvent = function(eventName, selector, method) {
     if(arguments.length == 2) {
         method = selector;
         selector = null;
@@ -77,13 +86,15 @@ View.prototype._delegateEvents = function() {
     this._undelegateEvents();
 
     for(var key in this.events) {
-        var match = key.match(delegateEventSplitter);
-        var eventName = match[1], selector = match[2];
-        var method = this[this.events[key]].bind(this);
+        var match = key.match(delegateEventSplitter),
+            eventName = match[1], 
+            selector = match[2],
+            method = this[this.events[key]].bind(this);
 
-        eventName += '.delegateEvents' + this.cid;
+        // eventName += '.delegateEvents' + this.cid;
 
-        this.$el.on(eventName, selector, method);
+        this.addEvent(eventName, selector, method);
+        // this.$el.on(eventName, selector, method);
     }
 
     return this;
@@ -95,20 +106,20 @@ View.prototype._undelegateEvents = function() {
 };
 
 var TemplatedView = function(options) {
-    View.call(this, options)
+    View.call(this, options);
 };
 
 TemplatedView.prototype = Object.create(View.prototype);
 
 TemplatedView.prototype.constructor = TemplatedView;
 
-TemplatedView.prototype.render = function() {
-    return this.template(this, this.controller);
+TemplatedView.prototype.render = function(state) {
+    return this.template(this, state);
 };
 
-TemplatedView.prototype.bindController = function(controller) {
-    this.controller = controller;
-};
+// TemplatedView.prototype.bindState = function(state) {
+//     this.state = state;
+// };
 
 module.exports = {
     View: View,

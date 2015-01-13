@@ -1,9 +1,10 @@
-var util = require("./util");
-var views = require("./views");
-var controllers = require("./controllers");
-var modules = require("./modules");
-var model = require("./model");
-var mithril = require("mithril");
+var util = require("./util"),
+    views = require("./views"),
+    controllers = require("./controllers"),
+    modules = require("./modules"),
+    model = require("./model"),
+    router = require("./router"),
+    mithril = require("mithril");
 
 var VERSION = "0.1.0";
 
@@ -29,6 +30,9 @@ module.exports = {
 
     // Model
     Model: model.Model,
+
+    // Router
+    Router: router.Router,
 
     // Mithril
     m: mithril,

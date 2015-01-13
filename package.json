@@ -2,7 +2,7 @@
   "author": "Daily Muse Inc",
   "name": "mithril-coat",
   "description": "A minimalistic frontend web framework that builds on Mithril",
-  "version": "0.1.0",
+  "version": "0.1.3",
   "main": "lib/index.js",
   "bin": {
     "coat": "bin/coat.js"
