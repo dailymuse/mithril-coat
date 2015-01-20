@@ -46,7 +46,16 @@ var deparam = function(qs) {
     return deparamed;
 };
 
+var captureEvents = function(view) {
+    return function(element, isInitialized) {
+        view.$el = view.$(element);
+
+        view._delegateEvents();
+    }
+}
+
 module.exports = {
     map: map,
-    deparam: deparam
+    deparam: deparam,
+    captureEvents: captureEvents
 };

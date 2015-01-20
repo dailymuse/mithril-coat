@@ -4,7 +4,8 @@ var util = require("./util"),
     modules = require("./modules"),
     model = require("./model"),
     router = require("./router"),
-    mithril = require("mithril");
+    mithril = require("mithril"),
+    PubSub = require("pubsub-js");
 
 var VERSION = "0.1.0";
 
@@ -17,6 +18,7 @@ module.exports = {
     // Utils
     map: util.map,
     deparam: util.deparam,
+    captureEvents: util.captureEvents,
 
     // Views
     View: views.View,
@@ -33,6 +35,12 @@ module.exports = {
 
     // Router
     Router: router.Router,
+
+    // PubSub
+    unsubscribe: PubSub.unsubscribe,
+    publish: PubSub.publish,
+    publishSync: PubSub.publishSync,
+    clearAllSubscriptions: PubSub.clearAllSubscriptions,
 
     // Mithril
     m: mithril,

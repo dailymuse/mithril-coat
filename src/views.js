@@ -1,5 +1,3 @@
-var events = require("./event");
-
 // Used to generate a unique view ID
 var uniqueViewId = 0;
 
@@ -8,23 +6,13 @@ var delegateEventSplitter = /^(\S+)\s*(.*)$/;
 
 // Coat.View. Basically a stripped-down version of Backbone.View.
 var View = function(options) {
-    events.Events.call(this);
-
     this._setOptions(options || {});
     this._delegateEvents();
 };
 
-View.prototype = Object.create(events.Events.prototype);
-
-View.prototype.constructor = View;
-
 View.prototype._setOptions = function(options) {
     for(var key in options) {
         this[key] = options[key];
-    }
-
-    if(!this.$el) {
-        throw new Error("No $el bound to " + this.constructor.name + " - view can't bind events");
     }
 
     this.options = options;
@@ -36,7 +24,6 @@ View.prototype.$ = function(selector) {
 };
 
 View.prototype.addEvent = function(eventName, selector, method) {
-    console.log('on')
     if(arguments.length == 2) {
         method = selector;
         selector = null;
@@ -83,6 +70,10 @@ View.prototype.removeEvent = function(eventName, selector, method) {
 };
 
 View.prototype._delegateEvents = function() {
+    if(!this.$el) {
+        throw new Error("No $el bound to " + this.constructor.name + " - view can't bind events");
+    }
+
     this._undelegateEvents();
 
     for(var key in this.events) {
@@ -91,10 +82,7 @@ View.prototype._delegateEvents = function() {
             selector = match[2],
             method = this[this.events[key]].bind(this);
 
-        // eventName += '.delegateEvents' + this.cid;
-
         this.addEvent(eventName, selector, method);
-        // this.$el.on(eventName, selector, method);
     }
 
     return this;
@@ -106,20 +94,20 @@ View.prototype._undelegateEvents = function() {
 };
 
 var TemplatedView = function(options) {
-    View.call(this, options);
+    if(options.$el) {
+        View.call(this, options);
+    } else {
+        this._setOptions();
+    }
 };
 
 TemplatedView.prototype = Object.create(View.prototype);
 
 TemplatedView.prototype.constructor = TemplatedView;
 
-TemplatedView.prototype.render = function(state) {
-    return this.template(this, state);
+TemplatedView.prototype.render = function() {
+    return this.template(this, this.state);
 };
-
-// TemplatedView.prototype.bindState = function(state) {
-//     this.state = state;
-// };
 
 module.exports = {
     View: View,

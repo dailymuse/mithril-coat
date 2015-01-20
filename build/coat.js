@@ -521,6 +521,7 @@ var m = (function app(window, undefined) {
 	};
 	m.redraw.strategy = m.prop();
 	function redraw() {
+		console.log('in m.redraw')
 		var mode = m.redraw.strategy();
 		for (var i = 0; i < roots.length; i++) {
 			if (controllers[i] && mode != "none") {
@@ -986,18 +987,252 @@ if (typeof module != "undefined" && module !== null && module.exports) module.ex
 else if (typeof define == "function" && define.amd) define(function() {return m});
 
 },{}],2:[function(_dereq_,module,exports){
-var mithril = _dereq_("mithril"),
-    events = _dereq_("./event");
+/*
+Copyright (c) 2010,2011,2012,2013,2014 Morgan Roderick http://roderick.dk
+License: MIT - http://mrgnrdrck.mit-license.org
+
+https://github.com/mroderick/PubSubJS
+*/
+/*jslint white:true, plusplus:true, stupid:true*/
+/*global
+	setTimeout,
+	module,
+	exports,
+	define,
+	require,
+	window
+*/
+(function (root, factory){
+	'use strict';
+
+    if (typeof define === 'function' && define.amd){
+        // AMD. Register as an anonymous module.
+        define(['exports'], factory);
+
+    } else if (typeof exports === 'object'){
+        // CommonJS
+        factory(exports);
+
+    } else {
+        // Browser globals
+        factory((root.PubSub = {}));
+
+    }
+}(( typeof window === 'object' && window ) || this, function (PubSub){
+	'use strict';
+
+	var messages = {},
+		lastUid = -1;
+
+	function hasKeys(obj){
+		var key;
+
+		for (key in obj){
+			if ( obj.hasOwnProperty(key) ){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 *	Returns a function that throws the passed exception, for use as argument for setTimeout
+	 *	@param { Object } ex An Error object
+	 */
+	function throwException( ex ){
+		return function reThrowException(){
+			throw ex;
+		};
+	}
+
+	function callSubscriberWithDelayedExceptions( subscriber, message, data ){
+		try {
+			subscriber( message, data );
+		} catch( ex ){
+			setTimeout( throwException( ex ), 0);
+		}
+	}
+
+	function callSubscriberWithImmediateExceptions( subscriber, message, data ){
+		subscriber( message, data );
+	}
+
+	function deliverMessage( originalMessage, matchedMessage, data, immediateExceptions ){
+		var subscribers = messages[matchedMessage],
+			callSubscriber = immediateExceptions ? callSubscriberWithImmediateExceptions : callSubscriberWithDelayedExceptions,
+			s;
+
+		if ( !messages.hasOwnProperty( matchedMessage ) ) {
+			return;
+		}
+
+		for (s in subscribers){
+			if ( subscribers.hasOwnProperty(s)){
+				callSubscriber( subscribers[s], originalMessage, data );
+			}
+		}
+	}
+
+	function createDeliveryFunction( message, data, immediateExceptions ){
+		return function deliverNamespaced(){
+			var topic = String( message ),
+				position = topic.lastIndexOf( '.' );
+
+			// deliver the message as it is now
+			deliverMessage(message, message, data, immediateExceptions);
+
+			// trim the hierarchy and deliver message to each level
+			while( position !== -1 ){
+				topic = topic.substr( 0, position );
+				position = topic.lastIndexOf('.');
+				deliverMessage( message, topic, data );
+			}
+		};
+	}
+
+	function messageHasSubscribers( message ){
+		var topic = String( message ),
+			found = Boolean(messages.hasOwnProperty( topic ) && hasKeys(messages[topic])),
+			position = topic.lastIndexOf( '.' );
+
+		while ( !found && position !== -1 ){
+			topic = topic.substr( 0, position );
+			position = topic.lastIndexOf( '.' );
+			found = Boolean(messages.hasOwnProperty( topic ) && hasKeys(messages[topic]));
+		}
+
+		return found;
+	}
+
+	function publish( message, data, sync, immediateExceptions ){
+		var deliver = createDeliveryFunction( message, data, immediateExceptions ),
+			hasSubscribers = messageHasSubscribers( message );
+
+		if ( !hasSubscribers ){
+			return false;
+		}
+
+		if ( sync === true ){
+			deliver();
+		} else {
+			setTimeout( deliver, 0 );
+		}
+		return true;
+	}
+
+	/**
+	 *	PubSub.publish( message[, data] ) -> Boolean
+	 *	- message (String): The message to publish
+	 *	- data: The data to pass to subscribers
+	 *	Publishes the the message, passing the data to it's subscribers
+	**/
+	PubSub.publish = function( message, data ){
+		return publish( message, data, false, PubSub.immediateExceptions );
+	};
+
+	/**
+	 *	PubSub.publishSync( message[, data] ) -> Boolean
+	 *	- message (String): The message to publish
+	 *	- data: The data to pass to subscribers
+	 *	Publishes the the message synchronously, passing the data to it's subscribers
+	**/
+	PubSub.publishSync = function( message, data ){
+		return publish( message, data, true, PubSub.immediateExceptions );
+	};
+
+	/**
+	 *	PubSub.subscribe( message, func ) -> String
+	 *	- message (String): The message to subscribe to
+	 *	- func (Function): The function to call when a new message is published
+	 *	Subscribes the passed function to the passed message. Every returned token is unique and should be stored if
+	 *	you need to unsubscribe
+	**/
+	PubSub.subscribe = function( message, func ){
+		if ( typeof func !== 'function'){
+			return false;
+		}
+
+		// message is not registered yet
+		if ( !messages.hasOwnProperty( message ) ){
+			messages[message] = {};
+		}
+
+		// forcing token as String, to allow for future expansions without breaking usage
+		// and allow for easy use as key names for the 'messages' object
+		var token = 'uid_' + String(++lastUid);
+		messages[message][token] = func;
+
+		// return token for unsubscribing
+		return token;
+	};
+
+	/* Public: Clears all subscriptions
+	 */
+	PubSub.clearAllSubscriptions = function clearSubscriptions(){
+		messages = {};
+	};
+
+	/* Public: removes subscriptions.
+	 * When passed a token, removes a specific subscription.
+	 * When passed a function, removes all subscriptions for that function
+	 * When passed a topic, removes all subscriptions for that topic (hierarchy)
+	 *
+	 * value - A token, function or topic to unsubscribe.
+	 *
+	 * Examples
+	 *
+	 *		// Example 1 - unsubscribing with a token
+	 *		var token = PubSub.subscribe('mytopic', myFunc);
+	 *		PubSub.unsubscribe(token);
+	 *
+	 *		// Example 2 - unsubscribing with a function
+	 *		PubSub.unsubscribe(myFunc);
+	 *
+	 *		// Example 3 - unsubscribing a topic
+	 *		PubSub.unsubscribe('mytopic');
+	 */
+	PubSub.unsubscribe = function(value){
+		var isTopic    = typeof value === 'string' && messages.hasOwnProperty(value),
+			isToken    = !isTopic && typeof value === 'string',
+			isFunction = typeof value === 'function',
+			result = false,
+			m, message, t, token;
+
+		if (isTopic){
+			delete messages[value];
+			return;
+		}
+
+		for ( m in messages ){
+			if ( messages.hasOwnProperty( m ) ){
+				message = messages[m];
+
+				if ( isToken && message[value] ){
+					delete message[value];
+					result = value;
+					// tokens are unique, so we can just stop here
+					break;
+				} else if (isFunction) {
+					for ( t in message ){
+						if (message.hasOwnProperty(t) && message[t] === value){
+							delete message[t];
+							result = true;
+						}
+					}
+				}
+			}
+		}
+
+		return result;
+	};
+}));
+
+},{}],3:[function(_dereq_,module,exports){
+var mithril = _dereq_("mithril");
 
 var Controller = function(obj) {
-    events.Events.call(this);
-
     this._setOptions(obj);
 };
-
-Controller.prototype = Object.create(events.Events.prototype);
-
-Controller.prototype.constructor = Controller;
 
 Controller.prototype._setOptions = function(options) {
     for(var key in options) {
@@ -1021,7 +1256,7 @@ module.exports = {
     Controller: Controller
 };
 
-},{"./event":3,"mithril":1}],3:[function(_dereq_,module,exports){
+},{"mithril":1}],4:[function(_dereq_,module,exports){
 var eventSplitter = /\s+/;
 
 // Backbone events repurposed for Mithril Coat
@@ -1158,14 +1393,15 @@ module.exports = {
     Events: Events
 };
 
-},{}],4:[function(_dereq_,module,exports){
+},{}],5:[function(_dereq_,module,exports){
 var util = _dereq_("./util"),
     views = _dereq_("./views"),
     controllers = _dereq_("./controllers"),
     modules = _dereq_("./modules"),
     model = _dereq_("./model"),
     router = _dereq_("./router"),
-    mithril = _dereq_("mithril");
+    mithril = _dereq_("mithril"),
+    PubSub = _dereq_("pubsub-js");
 
 var VERSION = "0.1.0";
 
@@ -1178,6 +1414,7 @@ module.exports = {
     // Utils
     map: util.map,
     deparam: util.deparam,
+    captureEvents: util.captureEvents,
 
     // Views
     View: views.View,
@@ -1195,6 +1432,12 @@ module.exports = {
     // Router
     Router: router.Router,
 
+    // PubSub
+    unsubscribe: PubSub.unsubscribe,
+    publish: PubSub.publish,
+    publishSync: PubSub.publishSync,
+    clearAllSubscriptions: PubSub.clearAllSubscriptions,
+
     // Mithril
     m: mithril,
     prop: mithril.prop,
@@ -1208,7 +1451,7 @@ module.exports = {
     deps: mithril.deps
 };
 
-},{"./controllers":2,"./model":5,"./modules":6,"./router":7,"./util":8,"./views":9,"mithril":1}],5:[function(_dereq_,module,exports){
+},{"./controllers":3,"./model":6,"./modules":7,"./router":8,"./util":9,"./views":10,"mithril":1,"pubsub-js":2}],6:[function(_dereq_,module,exports){
 var mithril = _dereq_("mithril");
 
 MITHRIL_REQUEST_OPTS = ["user", "password", "data", "background", "initialValue", "unwrapSuccess", "unwrapError", "serialize", "extract", "type"]
@@ -1288,36 +1531,77 @@ Model.prototype.save = function(options) {
 module.exports = {
     Model: Model
 };
-},{"mithril":1}],6:[function(_dereq_,module,exports){
+},{"mithril":1}],7:[function(_dereq_,module,exports){
 var mithril = _dereq_("mithril"),
-    events = _dereq_("./event");
+    PubSub = _dereq_("pubsub-js");
 
-var Module = function(controller, view) {
-    this._controller = controller;
-    this._view = view;
+var Module = function(options) {
+    this._view = options.view;
 
-    this.setEvents();
+    this._setOptions(options);
+    this._events = this.events();
+    this._setEvents();
 };
 
-// TO DO FIGURE OUT HOW TO PASS STATE HERE
-Module.prototype.controller = function() {
-    return this._controller;
+Module.prototype._setOptions = function(options) {
+    for(var key in options) {
+        if(key !== "view") {
+            this[key] = options[key];
+        }
+    }
+
+    this.options = options;
+
+    // used to cancel specific pubsub tokens
+    this._tokenEvents = {};
 };
 
-Module.prototype.view = function(ctrl) {
-    console.log(this._controller)
-    return this._view.render(this._controller.state);
+Module.prototype.events = function() {
+    console.log('in parents events')
+    return {};
+};
+
+Module.prototype._setEvents = function() {
+    for(var key in this._events) {
+        var func = this._events[key];
+        console.log(key)
+        var token = PubSub.subscribe(key, func);
+
+        this._tokenEvents[key] = {
+            func: this._events[key],
+            token: token
+        }
+    }
+};
+
+Module.prototype.unsubscribeTopic = function(topicName, func) {
+    var events = this._tokenEvents[topicName];
+
+    for(var i=0; i<events.length; i++) {
+        if(func === events[i].func) {
+            PubSub.unsubscribe(events[i].token);
+        }
+    }
 };
 
 Module.prototype.activate = function() {
-    return mithril.module(this._view.$el[0], this);
+    var view = this._view;
+
+    return mithril.module(this._view.$el[0], {
+        controller: function() {
+            return;
+        }, 
+        view: function() {
+                return view.render();
+        }
+    });
 };
 
 module.exports = {
     Module: Module
 };
 
-},{"./event":3,"mithril":1}],7:[function(_dereq_,module,exports){
+},{"mithril":1,"pubsub-js":2}],8:[function(_dereq_,module,exports){
 var events = _dereq_("./event"),
     mithril = _dereq_("mithril");
 
@@ -1338,7 +1622,7 @@ Router.prototype._setOptions = function(options) {
     }
 
     if(!this.routes) {
-        throw new Error("No routes specified for " + this.constructor.name + "router.");
+        throw new Error("No routes specified for " + this.constructor.name + " router.");
     }
 
     this.options = options;
@@ -1356,7 +1640,7 @@ Router.prototype._route = function() {
 module.exports = {
     Router: Router
 }
-},{"./event":3,"mithril":1}],8:[function(_dereq_,module,exports){
+},{"./event":4,"mithril":1}],9:[function(_dereq_,module,exports){
 var map = function(obj, iterator, context) {
     if (obj == null) {
         return results;
@@ -1405,14 +1689,22 @@ var deparam = function(qs) {
     return deparamed;
 };
 
+var captureEvents = function(view) {
+    return function(element, isInitialized) {
+        view.$el = view.$(element);
+
+        console.log('setting view')
+        view._delegateEvents();
+    }
+}
+
 module.exports = {
     map: map,
-    deparam: deparam
+    deparam: deparam,
+    captureEvents: captureEvents
 };
 
-},{}],9:[function(_dereq_,module,exports){
-var events = _dereq_("./event");
-
+},{}],10:[function(_dereq_,module,exports){
 // Used to generate a unique view ID
 var uniqueViewId = 0;
 
@@ -1421,23 +1713,13 @@ var delegateEventSplitter = /^(\S+)\s*(.*)$/;
 
 // Coat.View. Basically a stripped-down version of Backbone.View.
 var View = function(options) {
-    events.Events.call(this);
-
     this._setOptions(options || {});
     this._delegateEvents();
 };
 
-View.prototype = Object.create(events.Events.prototype);
-
-View.prototype.constructor = View;
-
 View.prototype._setOptions = function(options) {
     for(var key in options) {
         this[key] = options[key];
-    }
-
-    if(!this.$el) {
-        throw new Error("No $el bound to " + this.constructor.name + " - view can't bind events");
     }
 
     this.options = options;
@@ -1449,7 +1731,6 @@ View.prototype.$ = function(selector) {
 };
 
 View.prototype.addEvent = function(eventName, selector, method) {
-    console.log('on')
     if(arguments.length == 2) {
         method = selector;
         selector = null;
@@ -1496,6 +1777,10 @@ View.prototype.removeEvent = function(eventName, selector, method) {
 };
 
 View.prototype._delegateEvents = function() {
+    if(!this.$el) {
+        throw new Error("No $el bound to " + this.constructor.name + " - view can't bind events");
+    }
+
     this._undelegateEvents();
 
     for(var key in this.events) {
@@ -1504,10 +1789,7 @@ View.prototype._delegateEvents = function() {
             selector = match[2],
             method = this[this.events[key]].bind(this);
 
-        // eventName += '.delegateEvents' + this.cid;
-
         this.addEvent(eventName, selector, method);
-        // this.$el.on(eventName, selector, method);
     }
 
     return this;
@@ -1519,26 +1801,26 @@ View.prototype._undelegateEvents = function() {
 };
 
 var TemplatedView = function(options) {
-    View.call(this, options);
+    if(options.$el) {
+        View.call(this, options);
+    } else {
+        this._setOptions();
+    }
 };
 
 TemplatedView.prototype = Object.create(View.prototype);
 
 TemplatedView.prototype.constructor = TemplatedView;
 
-TemplatedView.prototype.render = function(state) {
-    return this.template(this, state);
+TemplatedView.prototype.render = function() {
+    return this.template(this, this.state);
 };
-
-// TemplatedView.prototype.bindState = function(state) {
-//     this.state = state;
-// };
 
 module.exports = {
     View: View,
     TemplatedView: TemplatedView
 };
 
-},{"./event":3}]},{},[4])
-(4)
+},{}]},{},[5])
+(5)
 });

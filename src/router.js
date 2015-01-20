@@ -18,7 +18,7 @@ Router.prototype._setOptions = function(options) {
     }
 
     if(!this.routes) {
-        throw new Error("No routes specified for " + this.constructor.name + "router.");
+        throw new Error("No routes specified for " + this.constructor.name + " router.");
     }
 
     this.options = options;

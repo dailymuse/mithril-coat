@@ -27,7 +27,7 @@
     "test",
     "tests",
     "Makefile",
-    "bin", 
+    "bin",
     "lib"
   ],
   "repository": {

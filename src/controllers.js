@@ -1,15 +1,8 @@
-var mithril = require("mithril"),
-    events = require("./event");
+var mithril = require("mithril");
 
 var Controller = function(obj) {
-    events.Events.call(this);
-
     this._setOptions(obj);
 };
-
-Controller.prototype = Object.create(events.Events.prototype);
-
-Controller.prototype.constructor = Controller;
 
 Controller.prototype._setOptions = function(options) {
     for(var key in options) {

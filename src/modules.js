@@ -1,25 +1,64 @@
 var mithril = require("mithril"),
-    events = require("./event");
+    PubSub = require("pubsub-js");
 
-var Module = function(controller, view) {
-    this._controller = controller;
-    this._view = view;
+var Module = function(options) {
+    this._view = options.view;
 
-    this.setEvents();
+    this._setOptions(options);
+    this._events = this.events();
+    this._setEvents();
 };
 
-// TO DO FIGURE OUT HOW TO PASS STATE HERE
-Module.prototype.controller = function() {
-    return this._controller;
+Module.prototype._setOptions = function(options) {
+    for(var key in options) {
+        if(key !== "view") {
+            this[key] = options[key];
+        }
+    }
+
+    this.options = options;
+
+    // used to cancel specific pubsub tokens
+    this._tokenEvents = {};
 };
 
-Module.prototype.view = function(ctrl) {
-    console.log(this._controller)
-    return this._view.render(this._controller.state);
+Module.prototype.events = function() {
+    return {};
+};
+
+Module.prototype._setEvents = function() {
+    for(var key in this._events) {
+        var func = this._events[key];
+        var token = PubSub.subscribe(key, func);
+
+        this._tokenEvents[key] = {
+            func: this._events[key],
+            token: token
+        }
+    }
+};
+
+Module.prototype.unsubscribeTopic = function(topicName, func) {
+    var events = this._tokenEvents[topicName];
+
+    for(var i=0; i<events.length; i++) {
+        if(func === events[i].func) {
+            PubSub.unsubscribe(events[i].token);
+        }
+    }
 };
 
 Module.prototype.activate = function() {
-    return mithril.module(this._view.$el[0], this);
+    var view = this._view;
+
+    return mithril.module(this._view.$el[0], {
+        controller: function() {
+            return;
+        }, 
+        view: function() {
+                return view.render();
+        }
+    });
 };
 
 module.exports = {
