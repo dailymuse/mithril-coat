@@ -44,6 +44,7 @@ module.exports = {
 
     // Mithril
     m: mithril,
+    trust: mithril.trust,
     prop: mithril.prop,
     withAttr: mithril.withAttr,
     route: mithril.route,

@@ -21,7 +21,7 @@ var map = function(obj, iterator, context) {
 };
 
 var deparam = function(qs) {
-    if(qs.length && qs.indexOf(0) == "?") {
+    if(qs.length && qs[0] == "?") {
         qs = qs.substring(1);
     }
 

@@ -2,9 +2,10 @@ var events = require("./event"),
     mithril = require("mithril");
 
 var Router = function(options) {
+    this._setOptions(options || {});
+
     events.Events.call(this);
 
-    this._setOptions(options || {});
     this._route();
 }
 
@@ -21,16 +22,24 @@ Router.prototype._setOptions = function(options) {
         throw new Error("No routes specified for " + this.constructor.name + " router.");
     }
 
-    this.options = options;
-
-    if (this.mode === "pathname") {
-        this.root = "/";
+    if(this.$rootElt.length === 0) {
+        throw new Error("No $rootElt specified for " + this.constructor.name + " router.");
     }
 
+    this.options = options;
+
+    if(this.mode) {
+        mithril.route.mode = this.mode;
+    }
+    
+
+    if(this.mode === "pathname") {
+        this.root = "/";
+    }
 };
 
 Router.prototype._route = function() {
-    mithril.route(this.rootElt, this.root, this.routes)
+    mithril.route(this.$rootElt[0], this.root, this.routes())
 };
 
 module.exports = {
