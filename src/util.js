@@ -49,10 +49,7 @@ var deparam = function(qs) {
 var captureEvents = function(view) {
     return function(element, isInitialized) {
         if(!isInitialized) {
-            console.log('initing')
-            view.$el = $(element);
-
-            view._delegateEvents();
+            view.setEl($(element));
         }
     }
 }

@@ -7,7 +7,10 @@ var delegateEventSplitter = /^(\S+)\s*(.*)$/;
 // Coat.View. Basically a stripped-down version of Backbone.View.
 var View = function(options) {
     this._setOptions(options || {});
-    this._delegateEvents();
+
+    if(this.$el) {
+        this._delegateEvents();
+    }
 };
 
 View.prototype._setOptions = function(options) {
@@ -18,6 +21,12 @@ View.prototype._setOptions = function(options) {
     this.options = options;
     this.cid = 'view' + (uniqueViewId++);
 };
+
+// used by templated view when el isn't set an initialization
+View.prototype.setEl = function(el) {
+    this.$el = el;
+    this._delegateEvents();
+}
 
 View.prototype.$ = function(selector) {
     return this.$el.find(selector);
@@ -94,11 +103,7 @@ View.prototype._undelegateEvents = function() {
 };
 
 var TemplatedView = function(options) {
-    if(options.$el) {
-        View.call(this, options);
-    } else {
-        this._setOptions(options);
-    }
+    View.call(this, options);
 };
 
 TemplatedView.prototype = Object.create(View.prototype);

@@ -19,27 +19,21 @@ Router.prototype._setOptions = function(options) {
     }
 
     if(!this.routes) {
-        throw new Error("No routes specified for " + this.constructor.name + " router.");
+        throw new Error("No routes specified for ");
     }
 
-    if(this.$rootElt.length === 0) {
-        throw new Error("No $rootElt specified for " + this.constructor.name + " router.");
+    if(this.$rootEl.length === 0) {
+        throw new Error("No $rootElt specified for ");
     }
 
     this.options = options;
 
-    if(this.mode) {
-        mithril.route.mode = this.mode;
-    }
-    
-
-    if(this.mode === "pathname") {
-        this.root = "/";
-    }
+    mithril.route.mode = "pathname";
+    this.root = "/";
 };
 
 Router.prototype._route = function() {
-    mithril.route(this.$rootElt[0], this.root, this.routes())
+    mithril.route(this.$rootEl[0], this.root, this.routes())
 };
 
 module.exports = {
