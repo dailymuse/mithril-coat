@@ -97,7 +97,7 @@ var TemplatedView = function(options) {
     if(options.$el) {
         View.call(this, options);
     } else {
-        this._setOptions();
+        this._setOptions(options);
     }
 };
 

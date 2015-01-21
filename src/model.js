@@ -55,9 +55,13 @@ Model.prototype._request = function(method, options) {
     mithril.request(requestOpts)
         .then(function(response) {
             self._updateProps(response);
-            options.success(response);
+            if(options.success) { 
+                options.success(response); 
+            }
         }, function(error) {    
-            if(options.error) { options.error(error); }
+            if(options.error) { 
+                options.error(error); 
+            }
         })
 };
 

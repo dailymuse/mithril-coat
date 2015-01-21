@@ -1415,9 +1415,13 @@ Model.prototype._request = function(method, options) {
     mithril.request(requestOpts)
         .then(function(response) {
             self._updateProps(response);
-            options.success(response);
+            if(options.success) { 
+                options.success(response); 
+            }
         }, function(error) {    
-            if(options.error) { options.error(error); }
+            if(options.error) { 
+                options.error(error); 
+            }
         })
 };
 
@@ -1579,9 +1583,12 @@ var deparam = function(qs) {
 
 var captureEvents = function(view) {
     return function(element, isInitialized) {
-        view.$el = view.$(element);
+        if(!isInitialized) {
+            console.log('initing')
+            view.$el = $(element);
 
-        view._delegateEvents();
+            view._delegateEvents();
+        }
     }
 }
 
@@ -1691,7 +1698,7 @@ var TemplatedView = function(options) {
     if(options.$el) {
         View.call(this, options);
     } else {
-        this._setOptions();
+        this._setOptions(options);
     }
 };
 
