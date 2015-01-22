@@ -1506,27 +1506,21 @@ Router.prototype._setOptions = function(options) {
     }
 
     if(!this.routes) {
-        throw new Error("No routes specified for " + this.constructor.name + " router.");
+        throw new Error("No routes specified");
     }
 
-    if(this.$rootElt.length === 0) {
-        throw new Error("No $rootElt specified for " + this.constructor.name + " router.");
+    if(this.$rootEl.length === 0) {
+        throw new Error("No $rootElt specified");
     }
 
     this.options = options;
 
-    if(this.mode) {
-        mithril.route.mode = this.mode;
-    }
-    
-
-    if(this.mode === "pathname") {
-        this.root = "/";
-    }
+    mithril.route.mode = "pathname";
+    this.root = "/";
 };
 
 Router.prototype._route = function() {
-    mithril.route(this.$rootElt[0], this.root, this.routes())
+    mithril.route(this.$rootEl[0], this.root, this.routes())
 };
 
 module.exports = {
@@ -1584,10 +1578,7 @@ var deparam = function(qs) {
 var captureEvents = function(view) {
     return function(element, isInitialized) {
         if(!isInitialized) {
-            console.log('initing')
-            view.$el = $(element);
-
-            view._delegateEvents();
+            view.setEl($(element));
         }
     }
 }
@@ -1608,7 +1599,10 @@ var delegateEventSplitter = /^(\S+)\s*(.*)$/;
 // Coat.View. Basically a stripped-down version of Backbone.View.
 var View = function(options) {
     this._setOptions(options || {});
-    this._delegateEvents();
+
+    if(this.$el) {
+        this._delegateEvents();
+    }
 };
 
 View.prototype._setOptions = function(options) {
@@ -1619,6 +1613,12 @@ View.prototype._setOptions = function(options) {
     this.options = options;
     this.cid = 'view' + (uniqueViewId++);
 };
+
+// used by templated view when el isn't set an initialization
+View.prototype.setEl = function(el) {
+    this.$el = el;
+    this._delegateEvents();
+}
 
 View.prototype.$ = function(selector) {
     return this.$el.find(selector);
@@ -1677,11 +1677,11 @@ View.prototype._delegateEvents = function() {
 
     this._undelegateEvents();
 
-    for(var key in this.events) {
+    for(var key in this.domEvents) {
         var match = key.match(delegateEventSplitter),
             eventName = match[1], 
             selector = match[2],
-            method = this[this.events[key]].bind(this);
+            method = this[this.domEvents[key]].bind(this);
 
         this.addEvent(eventName, selector, method);
     }
@@ -1695,11 +1695,7 @@ View.prototype._undelegateEvents = function() {
 };
 
 var TemplatedView = function(options) {
-    if(options.$el) {
-        View.call(this, options);
-    } else {
-        this._setOptions(options);
-    }
+    View.call(this, options);
 };
 
 TemplatedView.prototype = Object.create(View.prototype);

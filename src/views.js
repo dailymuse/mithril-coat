@@ -85,11 +85,11 @@ View.prototype._delegateEvents = function() {
 
     this._undelegateEvents();
 
-    for(var key in this.events) {
+    for(var key in this.domEvents) {
         var match = key.match(delegateEventSplitter),
             eventName = match[1], 
             selector = match[2],
-            method = this[this.events[key]].bind(this);
+            method = this[this.domEvents[key]].bind(this);
 
         this.addEvent(eventName, selector, method);
     }

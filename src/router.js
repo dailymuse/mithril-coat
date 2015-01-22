@@ -19,11 +19,11 @@ Router.prototype._setOptions = function(options) {
     }
 
     if(!this.routes) {
-        throw new Error("No routes specified for ");
+        throw new Error("No routes specified");
     }
 
     if(this.$rootEl.length === 0) {
-        throw new Error("No $rootElt specified for ");
+        throw new Error("No $rootElt specified");
     }
 
     this.options = options;
