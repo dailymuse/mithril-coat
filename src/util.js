@@ -49,7 +49,6 @@ var deparam = function(qs) {
 var captureEvents = function(view) {
     return function(element, isInitialized) {
         if(!isInitialized) {
-            console.log('binding')
             view.setEl($(element));
         }
     }
