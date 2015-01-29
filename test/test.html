@@ -1,6 +1,6 @@
 <if expr="true">
     <ul>
-        <map expr="controller.users" as="user">
+        <map expr="controller.users" val="user" key="key">
             <li><val expr="user" /></li>
         </map>
     </ul>
@@ -16,6 +16,6 @@
 
 <nbsp count="5" />
 <raw expr="'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'" />
-<template name="foo" />
+<template path="foo" />
 
 <view name="view.ButtonView" args="{state: state.subModel}" />

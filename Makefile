@@ -5,6 +5,6 @@ clean:
 
 dev: 
 	npm run build
-	rm -rf ../themuse/static/lib/coat
-	cp -r build ../themuse/static/lib/coat
+	rm -rf ../themuse/static/lib/mithril-coat
+	cp -r build ../themuse/static/lib/mithril-coat
 

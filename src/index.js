@@ -11,6 +11,8 @@ var VERSION = "0.1.0";
 
 options = {}
 
+PubSub.immediateExceptions = true;
+
 module.exports = {
     // Versioning info
     version: VERSION,
@@ -50,7 +52,7 @@ module.exports = {
     route: mithril.route,
     request: mithril.request,
     deferred: mithril.deferred,
-    autoredraw: mithril.autoredraw,
+    redrawStrategy: mithril.redraw.strategy,
     startComputation: mithril.startComputation,
     endComputation: mithril.endComputation,
     deps: mithril.deps
