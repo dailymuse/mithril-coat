@@ -30,7 +30,9 @@ var deparam = function(qs) {
 
     for(var i=0; i<parts.length; i++) {
         var pair = parts[i].split("=");
-        var key = decodeURIComponent(pair[0]), value = decodeURIComponent(pair[1]);
+        // split the key to handle multi arguments
+        var key = decodeURIComponent(pair[0]).split("[]")[0], 
+            value = decodeURIComponent(pair[1]);
         var curValue = deparamed[key];
         var curType = typeof(curValue);
 
