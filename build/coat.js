@@ -543,7 +543,7 @@ var m = (function app(window, undefined) {
 		var forceRedraw = m.redraw.strategy() === "all";
 		for (var i = 0, root; root = roots[i]; i++) {
 			if (controllers[i]) {
-				m.render(root, (modules[i].view || blank)(controllers[i]), forceRedraw)
+				m.render(root, modules[i].view ? modules[i].view(controllers[i]) : blank(), forceRedraw)
 			}
 		}
 		//after rendering within a routed context, we need to scroll back to the top, and fetch the document title for history.pushState
@@ -615,6 +615,7 @@ var m = (function app(window, undefined) {
 		}
 		//m.route(route, params)
 		else if (type.call(arguments[0]) === STRING) {
+			var oldRoute = currentRoute;
 			currentRoute = arguments[0];
 			var args = arguments[1] || {}
 			var queryIndex = currentRoute.indexOf("?")
@@ -624,7 +625,7 @@ var m = (function app(window, undefined) {
 			var currentPath = queryIndex > -1 ? currentRoute.slice(0, queryIndex) : currentRoute
 			if (querystring) currentRoute = currentPath + (currentPath.indexOf("?") === -1 ? "?" : "&") + querystring;
 
-			var shouldReplaceHistoryEntry = (arguments.length === 3 ? arguments[2] : arguments[1]) === true || currentRoute === arguments[0];
+			var shouldReplaceHistoryEntry = (arguments.length === 3 ? arguments[2] : arguments[1]) === true || oldRoute === arguments[0];
 
 			if (window.history.pushState) {
 				computePostRedrawHook = function() {
@@ -693,7 +694,7 @@ var m = (function app(window, undefined) {
 			var pair = value != null && (valueType === OBJECT) ?
 				buildQueryString(value, key) :
 				valueType === ARRAY ?
-					value.map(function(item) {return encodeURIComponent(key) + "=" + encodeURIComponent(item)}).join("&") :
+					value.map(function(item) {return encodeURIComponent(key + "[]") + "=" + encodeURIComponent(item)}).join("&") :
 					encodeURIComponent(key) + "=" + encodeURIComponent(value)
 			str.push(pair)
 		}
