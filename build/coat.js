@@ -1635,6 +1635,10 @@ var View = function(options) {
     }
 };
 
+View.prototype.domEvents = function() {
+    return {}
+};
+
 View.prototype._setOptions = function(options) {
     for(var key in options) {
         this[key] = options[key];
@@ -1711,7 +1715,7 @@ View.prototype._delegateEvents = function() {
         var match = key.match(delegateEventSplitter),
             eventName = match[1], 
             selector = match[2],
-            method = this[this.domEvents[key]].bind(this);
+            method = this[this._events[key]].bind(this);
 
         this.addEvent(eventName, selector, method);
     }
