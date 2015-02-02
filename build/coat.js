@@ -1628,6 +1628,7 @@ var delegateEventSplitter = /^(\S+)\s*(.*)$/;
 // Coat.View. Basically a stripped-down version of Backbone.View.
 var View = function(options) {
     this._setOptions(options || {});
+    this._events = this.domEvents();
 
     if(this.$el) {
         this._delegateEvents();
@@ -1706,7 +1707,7 @@ View.prototype._delegateEvents = function() {
 
     this._undelegateEvents();
 
-    for(var key in this.domEvents) {
+    for(var key in this._events) {
         var match = key.match(delegateEventSplitter),
             eventName = match[1], 
             selector = match[2],
