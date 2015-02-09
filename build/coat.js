@@ -1475,7 +1475,9 @@ var mithril = _dereq_("mithril"),
     events = _dereq_("./event.js");
 
 var Module = function(options) {
-    this._view = options.view;
+    if (options.view) {
+        this._view = options.view;
+    }
 
     this._setOptions(options);
 
@@ -1610,6 +1612,7 @@ var captureEvents = function(view) {
     return function(element, isInitialized) {
         if(!isInitialized) {
             view.setEl($(element));
+            view.config();
         }
     }
 }
@@ -1638,7 +1641,7 @@ var View = function(options) {
 };
 
 View.prototype.domEvents = function() {
-    return {}
+    return {};
 };
 
 View.prototype._setOptions = function(options) {
@@ -1741,6 +1744,10 @@ TemplatedView.prototype.constructor = TemplatedView;
 TemplatedView.prototype.render = function() {
     return this.template(this, this.state);
 };
+
+TemplatedView.prototype.config = function() {
+    return null;
+}
 
 module.exports = {
     View: View,

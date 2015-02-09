@@ -52,6 +52,7 @@ var captureEvents = function(view) {
     return function(element, isInitialized) {
         if(!isInitialized) {
             view.setEl($(element));
+            view.config();
         }
     }
 }

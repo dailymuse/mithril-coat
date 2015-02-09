@@ -15,7 +15,7 @@ var View = function(options) {
 };
 
 View.prototype.domEvents = function() {
-    return {}
+    return {};
 };
 
 View.prototype._setOptions = function(options) {
@@ -118,6 +118,10 @@ TemplatedView.prototype.constructor = TemplatedView;
 TemplatedView.prototype.render = function() {
     return this.template(this, this.state);
 };
+
+TemplatedView.prototype.config = function() {
+    return null;
+}
 
 module.exports = {
     View: View,
