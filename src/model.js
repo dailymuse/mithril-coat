@@ -48,7 +48,7 @@ Model.prototype._getUrl = function() {
 Model.prototype._request = function(options) {
     var self = this,
         url = this._getUrl(),
-        requestOpts = {url: url, config: this.xhrConfig};
+        requestOpts = {url: url, config: this.xhrConfig, method: options.method};
 
     for(var key in options) {
         if(MITHRIL_REQUEST_OPTS.indexOf(key) !== -1) {
