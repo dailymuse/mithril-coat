@@ -1427,10 +1427,10 @@ Model.prototype._getUrl = function() {
     return typeof this.url === "function" ? this.url() : this.url;
 };
 
-Model.prototype._request = function(method, options) {
+Model.prototype._request = function(options) {
     var self = this,
         url = this._getUrl(),
-        requestOpts = {method: method, url: url, config: this.xhrConfig};
+        requestOpts = {url: url, config: this.xhrConfig};
 
     for(var key in options) {
         if(MITHRIL_REQUEST_OPTS.indexOf(key) !== -1) {
@@ -1455,16 +1455,20 @@ Model.prototype._request = function(method, options) {
 };
 
 Model.prototype.delete = function(options) {
-    this._request("DELETE", options);
+    options.method = "DELETE";
+    this._request(options);
 };
 
 Model.prototype.get = function(options) {
-    this._request("GET", options);
+    options.method = "GET";
+    this._request(options);
 };
 
 Model.prototype.save = function(options) {
-    var requestType = this.id ? "PUT" : "POST";
-    this._request(requestType, options);
+    if (!options.method) {
+        options.method = this.id ? "PUT" : "POST";
+    }
+    this._request(options);
 };
 
 module.exports = {
