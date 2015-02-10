@@ -81,7 +81,7 @@ Model.prototype.get = function(options) {
 };
 
 Model.prototype.save = function(options) {
-    var requestType = this.id ? "PUT" : "POST";
+    var requestType = this.id && !options.method ? "PUT" : "POST";
     this._request(requestType, options);
 };
 
