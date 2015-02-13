@@ -66,6 +66,7 @@ Model.prototype._request = function(options) {
                 options.success(response); 
             }
         }, function(error) {    
+            self.loading(false);
             if(options.error) { 
                 options.error(error); 
             }
