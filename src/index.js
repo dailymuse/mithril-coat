@@ -7,10 +7,11 @@ var util = require("./util"),
     mithril = require("mithril"),
     PubSub = require("pubsub-js");
 
-var VERSION = "0.1.0";
+var VERSION = "0.1.2";
 
 options = {}
 
+// only to see pubsub events
 PubSub.immediateExceptions = true;
 
 module.exports = {

@@ -60,15 +60,20 @@ Model.prototype._request = function(options) {
     // make request and update model props
     mithril.request(requestOpts)
         .then(function(response) {
+            // update all properties in response as mithril props on model
             self._updateProps(response);
+            // the request has finished loading
             self.loading(false);
+            // only want call success cb if was passed as opts
             if(options.success) { 
-                options.success(response); 
+                options.success(response, self); 
             }
-        }, function(error) {    
+        }, function(error) {   
+            // finished loading
             self.loading(false);
+            // only want to call error cb if was passed as opts
             if(options.error) { 
-                options.error(error); 
+                options.error(error, self); 
             }
         })
 };

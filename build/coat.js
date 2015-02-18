@@ -368,6 +368,16 @@ var m = (function app(window, undefined) {
 					else node.setAttribute(attrName, dataAttr)
 				}
 				catch (e) {
+					console.log('node');
+					console.log(node);
+					console.log('tag');
+					console.log(tag);
+					console.log('data attrs')
+					console.log(dataAttrs);
+					console.log('cachedAttrs')
+					console.log(cachedAttrs);
+					console.log('namespace')
+					console.log(namespace)
 					//swallow IE's invalid argument errors to mimic HTML's fallback-to-doing-nothing-on-invalid-attributes behavior
 					if (e.message.indexOf("Invalid argument") < 0) throw e
 				}
@@ -1328,10 +1338,11 @@ var util = _dereq_("./util"),
     mithril = _dereq_("mithril"),
     PubSub = _dereq_("pubsub-js");
 
-var VERSION = "0.1.0";
+var VERSION = "0.1.2";
 
 options = {}
 
+// only to see pubsub events
 PubSub.immediateExceptions = true;
 
 module.exports = {
@@ -1442,14 +1453,20 @@ Model.prototype._request = function(options) {
     // make request and update model props
     mithril.request(requestOpts)
         .then(function(response) {
+            // update all properties in response as mithril props on model
             self._updateProps(response);
+            // the request has finished loading
             self.loading(false);
+            // only want call success cb if was passed as opts
             if(options.success) { 
-                options.success(response); 
+                options.success(response, self); 
             }
-        }, function(error) {    
+        }, function(error) {   
+            // finished loading
+            self.loading(false);
+            // only want to call error cb if was passed as opts
             if(options.error) { 
-                options.error(error); 
+                options.error(error, self); 
             }
         })
 };
