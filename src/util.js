@@ -52,10 +52,10 @@ var captureEvents = function(view) {
     return function(element, isInitialized) {
         if(!isInitialized) {
             view.setEl($(element));
-            view.config();
+            view.config(element, isInitialized);
         }
     }
-}
+};
 
 module.exports = {
     map: map,

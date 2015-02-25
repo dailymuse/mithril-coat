@@ -52,12 +52,12 @@ var m = (function app(window, undefined) {
 		if (classes.length > 0) cell.attrs[classAttrName] = classes.join(" ");
 
 
-		var children = hasAttrs ? args[2] : args[1];
-		if (type.call(children) === ARRAY) {
-			cell.children = children
+		var children = hasAttrs ? args.slice(2) : args.slice(1);
+		if (children.length === 1 && type.call(children[0]) === ARRAY) {
+			cell.children = children[0]
 		}
 		else {
-			cell.children = hasAttrs ? args.slice(2) : args.slice(1)
+			cell.children = children
 		}
 
 		for (var attrName in attrs) {
@@ -118,9 +118,10 @@ var m = (function app(window, undefined) {
 				if (type.call(data[i]) === ARRAY) {
 					data = data.concat.apply([], data);
 					i-- //check current index again and flatten until there are no more nested arrays at that index
+					len = data.length
 				}
 			}
-			
+
 			var nodes = [], intact = cached.length === data.length, subArrayCount = 0;
 
 			//keys algorithm: sort elements without recreating them if keys are present
@@ -210,7 +211,7 @@ var m = (function app(window, undefined) {
 					//fix offset of next element if item was a trusted string w/ more than one html element
 					//the first clause in the regexp matches elements
 					//the second clause (after the pipe) matches text nodes
-					subArrayCount += (item.match(/<[^\/]|\>\s*[^<]/g) || []).length
+					subArrayCount += (item.match(/<[^\/]|\>\s*[^<]|&/g) || []).length
 				}
 				else subArrayCount += type.call(item) === ARRAY ? item.length : 1;
 				cached[cacheCount++] = item
@@ -368,16 +369,6 @@ var m = (function app(window, undefined) {
 					else node.setAttribute(attrName, dataAttr)
 				}
 				catch (e) {
-					console.log('node');
-					console.log(node);
-					console.log('tag');
-					console.log(tag);
-					console.log('data attrs')
-					console.log(dataAttrs);
-					console.log('cachedAttrs')
-					console.log(cachedAttrs);
-					console.log('namespace')
-					console.log(namespace)
 					//swallow IE's invalid argument errors to mimic HTML's fallback-to-doing-nothing-on-invalid-attributes behavior
 					if (e.message.indexOf("Invalid argument") < 0) throw e
 				}
@@ -615,13 +606,19 @@ var m = (function app(window, undefined) {
 			window[listener]()
 		}
 		//config: m.route
-		else if (arguments[0].addEventListener) {
+		else if (arguments[0].addEventListener || arguments[0].attachEvent) {
 			var element = arguments[0];
 			var isInitialized = arguments[1];
 			var context = arguments[2];
 			element.href = (m.route.mode !== 'pathname' ? $location.pathname : '') + modes[m.route.mode] + this.attrs.href;
-			element.removeEventListener("click", routeUnobtrusive);
-			element.addEventListener("click", routeUnobtrusive)
+			if (element.addEventListener) {
+				element.removeEventListener("click", routeUnobtrusive);
+				element.addEventListener("click", routeUnobtrusive)
+			}
+			else {
+				element.detachEvent("onclick", routeUnobtrusive);
+				element.attachEvent("onclick", routeUnobtrusive)
+			}
 		}
 		//m.route(route, params)
 		else if (type.call(arguments[0]) === STRING) {
@@ -644,7 +641,10 @@ var m = (function app(window, undefined) {
 				};
 				redirect(modes[m.route.mode] + currentRoute)
 			}
-			else $location[m.route.mode] = currentRoute
+			else {
+				$location[m.route.mode] = currentRoute
+				redirect(modes[m.route.mode] + currentRoute)
+			}
 		}
 	};
 	m.route.param = function(key) {
@@ -662,6 +662,15 @@ var m = (function app(window, undefined) {
 		if (queryStart !== -1) {
 			routeParams = parseQueryString(path.substr(queryStart + 1, path.length));
 			path = path.substr(0, queryStart)
+		}
+
+		// Get all routes and check if there's
+		// an exact match for the current path
+		var keys = Object.keys(router);
+		var index = keys.indexOf(path);
+		if(index !== -1){
+			m.module(root, router[keys [index]]);
+			return true;
 		}
 
 		for (var route in router) {
@@ -688,8 +697,9 @@ var m = (function app(window, undefined) {
 		if (e.ctrlKey || e.metaKey || e.which === 2) return;
 		if (e.preventDefault) e.preventDefault();
 		else e.returnValue = false;
-		var currentTarget = e.currentTarget || this;
+		var currentTarget = e.currentTarget || e.srcElement;
 		var args = m.route.mode === "pathname" && currentTarget.search ? parseQueryString(currentTarget.search.slice(1)) : {};
+		while (currentTarget && currentTarget.nodeName.toUpperCase() != "A") currentTarget = currentTarget.parentNode
 		m.route(currentTarget[m.route.mode].slice(modes[m.route.mode].length), args)
 	}
 	function setScroll() {
@@ -734,7 +744,8 @@ var m = (function app(window, undefined) {
 		var prop = m.prop();
 		promise.then(prop);
 		prop.then = function(resolve, reject) {
-			return propify(promise.then(resolve, reject))
+			promise = promise.then(resolve, reject).then(prop);
+			return prop;
 		};
 		return prop
 	}
@@ -1000,7 +1011,7 @@ var m = (function app(window, undefined) {
 			try {
 				e = e || event;
 				var unwrap = (e.type === "load" ? xhrOptions.unwrapSuccess : xhrOptions.unwrapError) || identity;
-				var response = unwrap(deserialize(extract(e.target, xhrOptions)));
+				var response = unwrap(deserialize(extract(e.target, xhrOptions)), e.target);
 				if (e.type === "load") {
 					if (type.call(response) === ARRAY && xhrOptions.type) {
 						for (var i = 0; i < response.length; i++) response[i] = new xhrOptions.type(response[i])
@@ -1404,7 +1415,7 @@ Model.prototype._setOptions = function(options) {
         this[key] = mithril.prop(options[key]);
     }
 
-    this.loading = mithril.prop(true);
+    this.loading = mithril.prop(false);
 };
 
 Model.prototype.setProps = function(obj) {
@@ -1472,12 +1483,16 @@ Model.prototype._request = function(options) {
 };
 
 Model.prototype.delete = function(options) {
-    options.method = "DELETE";
+    if (!options.method) {
+        options.method = "DELETE";
+    }
     this._request(options);
 };
 
 Model.prototype.get = function(options) {
-    options.method = "GET";
+    if (!options.method) {
+        options.method = "GET";
+    }
     this._request(options);
 };
 
@@ -1633,10 +1648,10 @@ var captureEvents = function(view) {
     return function(element, isInitialized) {
         if(!isInitialized) {
             view.setEl($(element));
-            view.config();
+            view.config(element, isInitialized);
         }
     }
-}
+};
 
 module.exports = {
     map: map,

@@ -11,7 +11,7 @@ Model.prototype._setOptions = function(options) {
         this[key] = mithril.prop(options[key]);
     }
 
-    this.loading = mithril.prop(true);
+    this.loading = mithril.prop(false);
 };
 
 Model.prototype.setProps = function(obj) {
@@ -79,12 +79,16 @@ Model.prototype._request = function(options) {
 };
 
 Model.prototype.delete = function(options) {
-    options.method = "DELETE";
+    if (!options.method) {
+        options.method = "DELETE";
+    }
     this._request(options);
 };
 
 Model.prototype.get = function(options) {
-    options.method = "GET";
+    if (!options.method) {
+        options.method = "GET";
+    }
     this._request(options);
 };
 
