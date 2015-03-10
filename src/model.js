@@ -3,14 +3,11 @@ var mithril = require("mithril");
 MITHRIL_REQUEST_OPTS = ["user", "password", "data", "background", "initialValue", "unwrapSuccess", "unwrapError", "serialize", "extract", "type"]
 
 var Model = function(options) {
-    this._setOptions(options || {});
-};
+   // model keys is an array of all model keys on the object
+    this.modelKeys = [];
+    this._updateProps(options)
 
-Model.prototype._setOptions = function(options) {
-    for(var key in options) {
-        this[key] = mithril.prop(options[key]);
-    }
-
+    // loading is a boolean which says whether the model is currently loading
     this.loading = mithril.prop(false);
 };
 
@@ -20,8 +17,6 @@ Model.prototype.setProps = function(obj) {
 
 // update model mithril properties 
 Model.prototype._updateProps = function(model) {
-    this.modelKeys = [];
-
     for(var key in model) {
         if(this[key]) {
             this[key](model[key]);
