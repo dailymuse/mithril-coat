@@ -45,7 +45,7 @@ Instantiates a module - all keys in the object passed into coat.Module are set o
 Events are bound to a module using Pubsub-js, which is a global pubsub system and therefore events are not Module specific. Modules expect the events to return an object mapping of event names to functions to call when the event is published.
 
 For example:
-```
+``` javascript
     // called when the event "button-clicked" is hit
     module.prototype.buttonClicked = function(msgName, data) {
         console.log('button clicked')
@@ -63,7 +63,7 @@ For example:
 Instantiates a mithril module using a [Mitril Coat Templated View](). In order to use activate coat.Module expects a view variable to be bound to the module object.
 
 For example:
-```
+``` javascript
     var module = new coat.Module({ view: new TemplatedView({ $el: $("body") }) })
     module.activate()
 ```
@@ -75,7 +75,7 @@ Similar to Modules Routers serve a dual purpose:
 2. as a way to initialize a mithril route.
 
 Routers expect only arguments to be passed in as an object
-```
+``` javascript
     $rootEl - a jQuery Node which will be used as the base node when Mithril.Router 
 
     var router = new coat.Router({
@@ -90,7 +90,7 @@ Exact same implementation as module.events()
 #### router.routes()
 Is called by Mithril.Router and should return an object mapping of mithril route urls to mithril objects. 
 
-```
+``` javascript
     router.prototype.routes = function() {
         "/": {
             controller: function() {
@@ -115,7 +115,7 @@ Mithril Coat has a notion of 2 different types of views:
 Base Views provide a number of convenience methods for interacting with existing dom nodes. 
 
 All views expect to be initialized with a $el, if not the view will throw an error
-```
+``` javascript
     var view = new coat.View({ 
         $el: $("body")
     })
@@ -124,7 +124,7 @@ All views expect to be initialized with a $el, if not the view will throw an err
 #### view.domEvents()
 Dom events takes a similar approach to backbone dom events and serves as a way to have event delegation on the view's $el. Like Modules and Routers events method, domEvents returns a mapping of keys structured as `"[events] [selector]"` and values as a function on the view. the domEvents method is called internally by mithril coat when a view is initialized. 
 
-```
+``` javascript
     view.prototype.domEvents = function() {
         return {
             "click a": "onClickLink"
@@ -144,7 +144,7 @@ Extends coat.View and adds additional functionality for views that use mithril t
 
 In addition to setting an $el, all `coat.TemplatedView` expect a mithril template to be passed in via a template key.
 
-```
+``` javascript
     var sampleTemplate = require("./template.js")
     var templatedView = new coat.TemplatedView({
         $el: $("body"),
@@ -165,7 +165,7 @@ All models also expect a url property to or a url function to be bound to the ob
 
 All keys and values that are passed in the opts objects are set as properties on the object and mithril properties respectively. 
 
-```
+``` javascript
     var model = new coat.Model({
         name: "mithril-coat",
         version: 1.0,
@@ -185,7 +185,7 @@ All coat models have a special property "loading" which is set to false on model
 ### model.xhrConfig(xhr) 
 This function should be extended if it is necessary to configure the xhr request.
 
-```
+``` javascript
     model.prototype.xhrConfig = function(xhr) {
         // in order to avoid caching issues in ie10
         xhr.setRequestHeader("Content-Type", "application/json");
@@ -211,7 +211,7 @@ Mithril Coat also allows you to pass in success and error call backs that will b
 #### model.get(opts)
 Submits a get request and optionally specifies the method to use in opts
 
-```
+``` javascript
     model.get({
         success: function(response, model) {
             console.log(response)
@@ -231,7 +231,7 @@ Submits a delete request to the server.
 ## Controllers
 Mithril coat controllers are meant to be used to manipulate model state and to initiate mithril redraws (either via model requests or via autoredraws). Like all other Mithril Coat Objects all options passed to controllers are set as properties on the instantiated Object.
 
-```
+``` javascript
     var controller = new coat.Controller({
         model: new coat.Model({
             url: "api/confirm"
@@ -242,7 +242,7 @@ Mithril coat controllers are meant to be used to manipulate model state and to i
 #### ctrl.autoredraw(cb, opts)
 Redraws a view using mithrils `startComputation()` and `endComputation` in a try, finally block as recomended by mithril. Calls the callback and passes opts as an argument to the callback. 
 
-```
+``` javascript
     // inside some function in a controller
     this.autoredraw(function(opts) {
         console.log(opts);
