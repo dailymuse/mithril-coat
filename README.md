@@ -137,18 +137,24 @@ Dom events takes a similar approach to backbone dom events and serves as a way t
 ```
 
 #### view.$(jquerySelector)
-returns the dom nodes that match the selector inside the $el
+returns the DOM nodes that match the selector inside the $el
 
 #### coat.TemplatedView
 Extends coat.View and adds additional functionality for views that use mithril templates. 
 
 In addition to setting an $el, all `coat.TemplatedView` expect a mithril template to be passed in via a template key.
 
+If you want to pass model data to a view it should be done via the state property which exposed in the template.
+
 ```
     var sampleTemplate = require("./template.js")
     var templatedView = new coat.TemplatedView({
         $el: $("body"),
-        template: sampleTemplate
+        template: sampleTemplate,
+        state: new coat.Model({
+            name: "daily muse",
+            version: "1.0.1"
+        })
     })
 ```
 
@@ -223,7 +229,7 @@ Submits a get request and optionally specifies the method to use in opts
 ```
 
 #### model.save(opts)
-By default if a `"method"` key is not set in opts and an id is set on the model then mithril coat will set the method request to `"PUT"` and if there is not id it will set the method request to `"POST"`. However there are times when you should submit a `"PUT"` request even though an id exists - therefore we provide the flexbility to determine which method to use. 
+By default if a `"method"` key is not set in opts and an id is set on the model then mithril coat will set the method request to `"PUT"` and if there is not id it will set the method request to `"POST"`. However there are times when you should submit a `"PUT"` request even though an id exists - therefore we provide the flexibility to determine which method to use. 
 
 #### model.delete(opts)
 Submits a delete request to the server.
@@ -240,7 +246,7 @@ Mithril coat controllers are meant to be used to manipulate model state and to i
 ```
 
 #### ctrl.autoredraw(cb, opts)
-Redraws a view using mithrils `startComputation()` and `endComputation` in a try, finally block as recomended by mithril. Calls the callback and passes opts as an argument to the callback. 
+Redraws a view using mithrils `startComputation()` and `endComputation` in a try, finally block as recommended by mithril. Calls the callback and passes opts as an argument to the callback. 
 
 ```
     // inside some function in a controller
@@ -254,8 +260,98 @@ Mithril coat templates are mithril templates that are written in HTML. The files
 
 Mithril coat templates are simply html templates that are compiled to mithril. The templating language is expected to be used in conjunction with [Browserify](http://browserify.org/) as it `module exports` all the templates. 
 
+All Mithril Coat templates receive two variables: `(view, state)`. `vie` is a reference to the view object that has the template so any property on the view is available to you via the view object. `state` is the state that was passed in the view on initialization. `state` is the place where any model or ui data should exist. 
 
+Mithril coat template support all html tags and have an additional 7 html tags
+```
+* if, elif, else
+* val
+* raw
+* map
+* nbsp
+* template
+* view
+```
 
+### <if expr=""></if>, <elif expr=""></elif, <else expr=""></else>
+Every if and elif tag need to have an `expr` attribute on it and the value of `expr` should be a JavaScript expression. All if, elif, and else tags need to be closed. All tags must also have valid content placed in between their tags.
+
+``` html
+<!-- remember state is a varibale that's passed into a mithril-template from the view -->
+<if expr="state.window()">
+    <h1>The Window objext exist</h1>
+</if>
+<elif expr="state.hello().length > 0">
+    <h1>Hello World</h1>
+</elif>
+<else>
+    <h1>In the else</h1>
+</else>
+
+<!-- 
+NOTE THIS IS WILL FAIL COMPILATION IN MITHRIL COAT because there are no contents in between 
+<if expr="state.window">
+
+</if>
+-->
+```
+
+### <val expr="" />
+`val` is a self closing tag that evaluates a JavaScript. The only attribute it accepts is `expr`.
+
+``` html
+<!-- 
+would evaluate the JavaScript state.hello() expression and place the value in 
+the paragraph tag
+-->
+<p>
+    <val expr="state.hello()" />
+</p>
+```
+
+### <raw val||expr="" />
+`raw` wraps a string or a JavaScript expression in `mithril.trust`. The two different attributes are `val` and `expr`. 
+
+`val` accepts a JavaScript expression, so if `state` has a property `message: "hello world <span>The Muse</span>", `val` should be used to display `state.message()`.
+
+`expr` should be used to display a string such as html character entities.
+
+``` html
+<!-- let's stay state.message = coat.prop("hello world <span>The Muse</span>") -->
+<p>
+<!-- To display html content in a JavaScript expression -->
+    <raw val="state.message()" />
+</p>
+<span>
+    <raw expr="&excl;" />
+</span>
+```
+
+### <map expr="", key="", val=""></map>
+Allows for iterating over an object or an array. 
+
+If you are iterating over an object `key` is the current key in the iteration and `val` is the current value of that key. 
+
+If you are iterating over an array `key` is the current index and `val` is the current value of that index.
+
+``` html
+<!-- if state.numbers = coat.prop([1, 2, 3, 4]) -->
+<map expr="state.numbers()" val="num" key="index">
+    <p>Value is: <val expr="num" /> at index: <val expr="index" /></p>
+</map>
+
+<!-- if state.person = coat.prop({name: "The Muse", age: "3"}) -->
+<h2> The Properties of The Muse are: </h2>
+<map expr="state.person()" val="prop" key="key">
+    <p><val expr="key" />: <val expr="prop" /></p>
+</map>
+```
+
+### <nbsp count="" />
+
+### <template path="[pathName]" />
+
+### <view name="" args="{}" />
 
 
 
