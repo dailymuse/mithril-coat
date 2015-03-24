@@ -46,17 +46,17 @@ Events are bound to a module using Pubsub-js, which is a global pubsub system an
 
 For example:
 ``` javascript
-    // called when the event "button-clicked" is hit
-    module.prototype.buttonClicked = function(msgName, data) {
-        console.log('button clicked')
-        console.log(data)
-    }
+// called when the event "button-clicked" is hit
+module.prototype.buttonClicked = function(msgName, data) {
+    console.log('button clicked')
+    console.log(data)
+}
 
-    module.prototype.events = function() {
-        return {
-            "button-clicked": this.buttonClicked
-        }
+module.prototype.events = function() {
+    return {
+        "button-clicked": this.buttonClicked
     }
+}
 ```
 
 #### module.activate()
@@ -64,8 +64,8 @@ Instantiates a mithril module using a [Mitril Coat Templated View](). In order t
 
 For example:
 ``` javascript
-    var module = new coat.Module({ view: new TemplatedView({ $el: $("body") }) })
-    module.activate()
+var module = new coat.Module({ view: new TemplatedView({ $el: $("body") }) })
+module.activate()
 ```
 
 ### Routers
@@ -76,11 +76,11 @@ Similar to Modules Routers serve a dual purpose:
 
 Routers expect only arguments to be passed in as an object
 ``` javascript
-    $rootEl - a jQuery Node which will be used as the base node when Mithril.Router 
+$rootEl - a jQuery Node which will be used as the base node when Mithril.Router 
 
-    var router = new coat.Router({
-        $rootEl: $("body")
-    })
+var router = new coat.Router({
+    $rootEl: $("body")
+});
 ```
 Routers should have a templated view also passed in, but naming conventions should be decided by the developer.
 
@@ -91,19 +91,19 @@ Exact same implementation as module.events()
 Is called by Mithril.Router and should return an object mapping of mithril route urls to mithril objects. 
 
 ``` javascript
-    router.prototype.routes = function() {
-        "/": {
-            controller: function() {
-                // called by mithril every time a route is matched
-            },
-            view: function() {
-                // should call .render() on a mithril coat templated view 
-                // so if you have a templated view bound to router.view then 
-                // you can call this.view.render(), but if render is not called
-                // no html will be rendered on the page
-            }
+router.prototype.routes = function() {
+    "/": {
+        controller: function() {
+            // called by mithril every time a route is matched
+        },
+        view: function() {
+            // should call .render() on a mithril coat templated view 
+            // so if you have a templated view bound to router.view then 
+            // you can call this.view.render(), but if render is not called
+            // no html will be rendered on the page
         }
     }
+}
 ```
 
 ### Views
@@ -116,24 +116,24 @@ Base Views provide a number of convenience methods for interacting with existing
 
 All views expect to be initialized with a $el, if not the view will throw an error
 ``` javascript
-    var view = new coat.View({ 
-        $el: $("body")
-    })
+var view = new coat.View({ 
+    $el: $("body")
+})
 ```
 
 #### view.domEvents()
 Dom events takes a similar approach to backbone dom events and serves as a way to have event delegation on the view's $el. Like Modules and Routers events method, domEvents returns a mapping of keys structured as `"[events] [selector]"` and values as a function on the view. the domEvents method is called internally by mithril coat when a view is initialized. 
 
 ``` javascript
-    view.prototype.domEvents = function() {
-        return {
-            "click a": "onClickLink"
-        }
+view.prototype.domEvents = function() {
+    return {
+        "click a": "onClickLink"
     }
+}
 
-    view.prototype.onClickLink = function(e) {
-        console.log('linked clicked')
-    }
+view.prototype.onClickLink = function(e) {
+    console.log('linked clicked')
+}
 ```
 
 #### view.$(jquerySelector)
@@ -148,15 +148,15 @@ If you want to pass model data to a view it should be done via the state propert
 
 ```
 ``` javascript
-    var sampleTemplate = require("./template.js")
-    var templatedView = new coat.TemplatedView({
-        $el: $("body"),
-        template: sampleTemplate,
-        state: new coat.Model({
-            name: "daily muse",
-            version: "1.0.1"
-        })
+var sampleTemplate = require("./template.js")
+var templatedView = new coat.TemplatedView({
+    $el: $("body"),
+    template: sampleTemplate,
+    state: new coat.Model({
+        name: "daily muse",
+        version: "1.0.1"
     })
+})
 ```
 
 ##### templatedView.render()
@@ -173,18 +173,18 @@ All models also expect a url property to or a url function to be bound to the ob
 All keys and values that are passed in the opts objects are set as properties on the object and mithril properties respectively. 
 
 ``` javascript
-    var model = new coat.Model({
-        name: "mithril-coat",
-        version: 1.0,
-    });
+var model = new coat.Model({
+    name: "mithril-coat",
+    version: 1.0,
+});
 
-    // the url can be set in the options or after instantiation or as a function 
-    // should return a url string to request
-    model.prototype.url = function() {
-        return "/api/mithril-coat/" + this.version(s);
-    }
+// the url can be set in the options or after instantiation or as a function 
+// should return a url string to request
+model.prototype.url = function() {
+    return "/api/mithril-coat/" + this.version(s);
+}
 
-    console.log(model.name()) // prints "mithril-coat" to the console
+console.log(model.name()) // prints "mithril-coat" to the console
 ```
 
 All coat models have a special property "loading" which is set to false on model initialization and true when a request begins and false when a request finishes completes. To access the value of loading just access it like any mithril property: `model.loading()`.
@@ -193,10 +193,10 @@ All coat models have a special property "loading" which is set to false on model
 This function should be extended if it is necessary to configure the xhr request.
 
 ``` javascript
-    model.prototype.xhrConfig = function(xhr) {
-        // in order to avoid caching issues in ie10
-        xhr.setRequestHeader("Content-Type", "application/json");
-    }
+model.prototype.xhrConfig = function(xhr) {
+    // in order to avoid caching issues in ie10
+    xhr.setRequestHeader("Content-Type", "application/json");
+}
 ```
 
 ### Model Requests
@@ -219,14 +219,14 @@ Mithril Coat also allows you to pass in success and error call backs that will b
 Submits a get request and optionally specifies the method to use in opts
 
 ``` javascript
-    model.get({
-        success: function(response, model) {
-            console.log(response)
-        }, 
-        error: function(error, model) {`
-            console.log(error)
-        }
-    })
+model.get({
+    success: function(response, model) {
+        console.log(response)
+    }, 
+    error: function(error, model) {`
+        console.log(error)
+    }
+})
 ```
 
 #### model.save(opts)
@@ -239,21 +239,21 @@ Submits a delete request to the server.
 Mithril coat controllers are meant to be used to manipulate model state and to initiate mithril redraws (either via model requests or via autoredraws). Like all other Mithril Coat Objects all options passed to controllers are set as properties on the instantiated Object.
 
 ``` javascript
-    var controller = new coat.Controller({
-        model: new coat.Model({
-            url: "api/confirm"
-        })
+var controller = new coat.Controller({
+    model: new coat.Model({
+        url: "api/confirm"
     })
+})
 ```
 
 #### ctrl.autoredraw(cb, opts)
 Redraws a view using mithrils `startComputation()` and `endComputation` in a try, finally block as recommended by mithril. Calls the callback and passes opts as an argument to the callback. 
 
 ``` javascript
-    // inside some function in a controller
-    this.autoredraw(function(opts) {
-        console.log(opts);
-    }, opts);
+// inside some function in a controller
+this.autoredraw(function(opts) {
+    console.log(opts);
+}, opts);
 ```
 
 ## Mithril Coat Templates
@@ -349,10 +349,32 @@ If you are iterating over an array `key` is the current index and `val` is the c
 ```
 
 ### <nbsp count="" />
+Add the `&nspb;` character the number of times specified in the `count` property.
+
+``` html
+<!-- will add an nbsp HTML character 5 times -->
+<nbsp count="5" />
+```
 
 ### <template path="[pathName]" />
+Allows other templates to be included as partials in your current template. The `path` value should not include a file extension and the paths should be relative to the current directory. 
+
+``` html
+<!-- assuming there is another file in the same directory name 'hello_world.html' - note there are two ways that are both valid to include this file, the one above -->
+<template path="hello_world" />
+<template path="./hello_world" />
+
+```
 
 ### <view name="" args="{}" />
+Views are a means to include other templated views in the current view. There are several reasons why you might want to do this including having event binding correctly for sub-views and to allow sub-views to only have access to the states that they "control."
+
+``` html
+<!-- assuming that the `view` object has a reference to the templated view that we want to include and that the templated class is assigned to the `subview` property. Also let's assume that `state` has a property called `subview` that we want to pass as the state for the sub-view. Then we can generate the sub view with the following code. -->
+<view name="view.subview" args="{state: state.subview}" />
+```
+
+The $el for the view is automatically created and bounded by mithril coat. 
 
 
 
