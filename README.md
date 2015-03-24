@@ -274,7 +274,7 @@ Mithril coat template support all html tags and have an additional 7 html tags
 * view
 ```
 
-### <if expr=""></if>, <elif expr=""></elif, <else expr=""></else>
+#### `<if expr=""></if>, <elif expr=""></elif, <else expr=""></else>`
 Every if and elif tag need to have an `expr` attribute on it and the value of `expr` should be a JavaScript expression. All if, elif, and else tags need to be closed. All tags must also have valid content placed in between their tags.
 
 ``` html
@@ -297,7 +297,7 @@ NOTE THIS IS WILL FAIL COMPILATION IN MITHRIL COAT because there are no contents
 -->
 ```
 
-### <val expr="" />
+#### `<val expr="" />`
 `val` is a self closing tag that evaluates a JavaScript. The only attribute it accepts is `expr`.
 
 ``` html
@@ -310,7 +310,7 @@ the paragraph tag
 </p>
 ```
 
-### <raw val||expr="" />
+#### `<raw val||expr="" />`
 `raw` wraps a string or a JavaScript expression in `mithril.trust`. The two different attributes are `val` and `expr`. 
 
 `val` accepts a JavaScript expression, so if `state` has a property `message: "hello world <span>The Muse</span>", `val` should be used to display `state.message()`.
@@ -328,7 +328,7 @@ the paragraph tag
 </span>
 ```
 
-### <map expr="", key="", val=""></map>
+#### `<map expr="", key="", val=""></map>`
 Allows for iterating over an object or an array. 
 
 If you are iterating over an object `key` is the current key in the iteration and `val` is the current value of that key. 
@@ -348,7 +348,7 @@ If you are iterating over an array `key` is the current index and `val` is the c
 </map>
 ```
 
-### <nbsp count="" />
+#### `<nbsp count="" />`
 Add the `&nspb;` character the number of times specified in the `count` property.
 
 ``` html
@@ -356,7 +356,7 @@ Add the `&nspb;` character the number of times specified in the `count` property
 <nbsp count="5" />
 ```
 
-### <template path="[pathName]" />
+#### `<template path="[pathName]" />`
 Allows other templates to be included as partials in your current template. The `path` value should not include a file extension and the paths should be relative to the current directory. 
 
 ``` html
@@ -366,7 +366,7 @@ Allows other templates to be included as partials in your current template. The 
 
 ```
 
-### <view name="" args="{}" />
+#### `<view name="" args="{}" />`
 Views are a means to include other templated views in the current view. There are several reasons why you might want to do this including having event binding correctly for sub-views and to allow sub-views to only have access to the states that they "control."
 
 ``` html
