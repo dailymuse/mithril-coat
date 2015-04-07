@@ -1,7 +1,7 @@
 var events = require("./event"),
     mithril = require("mithril");
 
-var Router = function(options) {
+function Router(options) {
     this._setOptions(options || {});
 
     events.Events.call(this);

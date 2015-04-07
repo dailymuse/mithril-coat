@@ -2,7 +2,7 @@ var mithril = require("mithril");
 
 MITHRIL_REQUEST_OPTS = ["user", "password", "data", "background", "initialValue", "unwrapSuccess", "unwrapError", "serialize", "extract", "type"]
 
-var Model = function(options) {
+function Model(options) {
    // model keys is an array of all model keys on the object
     this.modelKeys = [];
     this._updateProps(options)
@@ -27,15 +27,19 @@ Model.prototype._updateProps = function(model) {
     }
 };
 
-// function to extend that allows you set xhrconfig status for all
-// mithril requests
+/**
+ * function to extend that allows you set xhrconfig status for all
+ * mithril requests
+ */
 Model.prototype.xhrConfig = function(xhr) {
     return 
 };
 
-// allow url to be set as property on Model object or as a function 
-// useful if need to conditionally set url based on variables passed into
-// model
+/**
+ * allow url to be set as property on Model object or as a function 
+ * useful if need to conditionally set url based on variables passed into
+ * model
+ */
 Model.prototype._getUrl = function() {
     return typeof this.url === "function" ? this.url() : this.url;
 };
@@ -73,21 +77,24 @@ Model.prototype._request = function(options) {
         })
 };
 
-Model.prototype.delete = function(options) {
+Model.prototype.delete = function(opts) {
+    var options = opts ? options : {};
     if (!options.method) {
         options.method = "DELETE";
     }
     this._request(options);
 };
 
-Model.prototype.get = function(options) {
+Model.prototype.get = function(opts) {
+    var options = opts ? options : {};
     if (!options.method) {
         options.method = "GET";
     }
     this._request(options);
 };
 
-Model.prototype.save = function(options) {
+Model.prototype.save = function(opts) {
+    var options = opts ? options : {};
     if (!options.method) {
         options.method = this.id ? "PUT" : "POST";
     }

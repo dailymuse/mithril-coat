@@ -1,7 +1,7 @@
 var mithril = require("mithril"),
     events = require("./event.js");
 
-var Module = function(options) {
+function Module(options) {
     if (options.view) {
         this._view = options.view;
     }

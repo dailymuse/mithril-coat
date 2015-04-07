@@ -1,7 +1,7 @@
 var PubSub = require("pubsub-js");
 
 // Event layer on top of pubsubjs
-var Events = function() {
+function Events () {
     this._events = this.events();
     this._setEvents();
 };

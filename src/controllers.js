@@ -1,6 +1,6 @@
 var mithril = require("mithril");
 
-var Controller = function(obj) {
+function Controller(obj) {
     this._setOptions(obj);
 };
 

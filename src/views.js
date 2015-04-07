@@ -5,7 +5,7 @@ var uniqueViewId = 0;
 var delegateEventSplitter = /^(\S+)\s*(.*)$/;
 
 // Coat.View. Basically a stripped-down version of Backbone.View.
-var View = function(options) {
+function View(options) {
     this._setOptions(options || {});
     this._events = this.domEvents();
 
