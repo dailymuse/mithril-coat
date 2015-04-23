@@ -17,9 +17,11 @@ Module.prototype.constructor = Module;
 
 Module.prototype._setOptions = function(options) {
     for(var key in options) {
+
         if(key !== "view") {
             this[key] = options[key];
         }
+        
     }
 
     this.options = options;

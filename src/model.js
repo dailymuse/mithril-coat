@@ -2,7 +2,7 @@ var mithril = require("mithril");
 
 MITHRIL_REQUEST_OPTS = ["user", "password", "data", "background", "initialValue", "unwrapSuccess", "unwrapError", "serialize", "extract", "type"]
 
-function Model(options) {
+function Model (options) {
    // model keys is an array of all model keys on the object
     this.modelKeys = [];
     this._updateProps(options)
@@ -11,13 +11,15 @@ function Model(options) {
     this.loading = mithril.prop(false);
 };
 
-Model.prototype.setProps = function(obj) {
-    this._updateProps(obj);
+// method to ste properties for options
+Model.prototype.setProps = function (options) {
+    this._updateProps(options);
 };
 
-// update model mithril properties 
-Model.prototype._updateProps = function(model) {
-    for(var key in model) {
+// update model mithril properties on Model object
+Model.prototype._updateProps = function (options) {
+    for(var key in options) {
+        // if the key exists then update the mithril property
         if(this[key]) {
             this[key](model[key]);
         } else {
@@ -31,7 +33,7 @@ Model.prototype._updateProps = function(model) {
  * function to extend that allows you set xhrconfig status for all
  * mithril requests
  */
-Model.prototype.xhrConfig = function(xhr) {
+Model.prototype.xhrConfig = function (xhr) {
     return 
 };
 
@@ -40,64 +42,82 @@ Model.prototype.xhrConfig = function(xhr) {
  * useful if need to conditionally set url based on variables passed into
  * model
  */
-Model.prototype._getUrl = function() {
+Model.prototype._getUrl = function () {
     return typeof this.url === "function" ? this.url() : this.url;
 };
 
-Model.prototype._request = function(options) {
-    var self = this,
+/** 
+ * Internal method used to make mithril requests and only submit the correct 
+ * request options to mithril
+ */
+Model.prototype._request = function (options) {
+    var _this = this,
         url = this._getUrl(),
         requestOpts = {url: url, config: this.xhrConfig, method: options.method};
 
-    for(var key in options) {
-        if(MITHRIL_REQUEST_OPTS.indexOf(key) !== -1) {
+    // only add an option if it is allowed by mithril
+    for (var key in options) {
+        if (MITHRIL_REQUEST_OPTS.indexOf(key) !== -1) {
             requestOpts[key] = options[key];
         }
     }
 
+    /**
+     * set the request to loading - allows for more fine grained control for 
+     * happens during loading
+     */
     this.loading(true);
     // make request and update model props
     mithril.request(requestOpts)
         .then(function(response) {
             // update all properties in response as mithril props on model
-            self._updateProps(response);
+            _this._updateProps(response);
+
             // the request has finished loading
-            self.loading(false);
+            _this.loading(false);
+
             // only want call success cb if was passed as opts
-            if(options.success) { 
-                options.success(response, self); 
+            if ("success" in options) { 
+                options.success(response, _this); 
             }
         }, function(error) {   
             // finished loading
-            self.loading(false);
+            _this.loading(false);
+
             // only want to call error cb if was passed as opts
-            if(options.error) { 
-                options.error(error, self); 
+            if ("error" in options) { 
+                options.error(error, _this); 
             }
         })
 };
 
-Model.prototype.delete = function(opts) {
-    var options = opts ? options : {};
-    if (!options.method) {
+Model.prototype.delete = function (options) {
+    var options = options ? options : {};
+
+    if (!("method" in options)) {
         options.method = "DELETE";
     }
+
     this._request(options);
 };
 
-Model.prototype.get = function(opts) {
-    var options = opts ? options : {};
-    if (!options.method) {
+Model.prototype.get = function (options) {
+    var options = options ? options : {};
+
+    if (!("method" in options)) {
         options.method = "GET";
     }
+
     this._request(options);
 };
 
-Model.prototype.save = function(opts) {
-    var options = opts ? options : {};
-    if (!options.method) {
+Model.prototype.save = function (options) {
+    var options = options ? options : {};
+
+    if (!("method" in options)) {
         options.method = this.id ? "PUT" : "POST";
     }
+
     this._request(options);
 };
 
