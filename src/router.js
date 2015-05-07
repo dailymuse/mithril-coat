@@ -1,17 +1,10 @@
-var events = require("./event"),
-    mithril = require("mithril");
+var mithril = require("mithril");
 
 function Router(options) {
     this._setOptions(options || {});
 
-    events.Events.call(this);
-
     this._route();
 }
-
-Router.prototype = Object.create(events.Events.prototype);
-
-Router.prototype.constructor = Router;
 
 Router.prototype._setOptions = function(options) {
     for(var key in options) {

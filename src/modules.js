@@ -1,5 +1,4 @@
-var mithril = require("mithril"),
-    events = require("./event.js");
+var mithril = require("mithril");
 
 function Module(options) {
     if (options.view) {
@@ -7,13 +6,7 @@ function Module(options) {
     }
 
     this._setOptions(options);
-
-    events.Events.call(this);
 };
-
-Module.prototype = Object.create(events.Events.prototype);
-
-Module.prototype.constructor = Module;
 
 Module.prototype._setOptions = function(options) {
     for(var key in options) {
