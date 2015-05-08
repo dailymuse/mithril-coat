@@ -1,7 +1,7 @@
 var mithril = require("mithril");
 
-var initModule = function($rootEl, view) {
-    return mithril.module($rootEl[0], {
+var initModule = function(view) {
+    return mithril.module(view.$el[0], {
         controller: function() {
             return;
         }, 
