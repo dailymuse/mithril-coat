@@ -20,7 +20,7 @@ Controller.prototype.events = function() {
 Controller.prototype._setEvents = function() {
     for(var key in this._events) {
         var func = this._events[key];
-        PubSub.subscribe(key, func);
+        PubSub.subscribe(key, func.bind(this));
     }
 };
 

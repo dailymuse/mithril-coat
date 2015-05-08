@@ -50,7 +50,7 @@ View.prototype.addEvent = function(eventName, selector, method) {
             throw new Error("Method `" + method + "` bound to event `" + eventName + "` does not exist in this view");
         }
 
-        method = $.proxy(method, this);
+        method.bind(this);
     }
 
     eventName += '.delegateEvents' + this.cid;

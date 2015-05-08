@@ -33,6 +33,7 @@ var updateRoute = function(route, params) {
     var route = route || window.location.pathname,
         params = params || {};
 
+    reqParams = params;
     coat.route(route, params);
 };
 

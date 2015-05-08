@@ -2022,7 +2022,7 @@ Controller.prototype.events = function() {
 Controller.prototype._setEvents = function() {
     for(var key in this._events) {
         var func = this._events[key];
-        PubSub.subscribe(key, func);
+        PubSub.subscribe(key, func.bind(this));
     }
 };
 
@@ -2075,11 +2075,11 @@ module.exports = {
     // Controllers
     Controller: controllers.Controller,
 
-    // Module
-    Module: modules.Module,
-
     // Model
     Model: model.Model,
+
+    // Module
+    initModule: modules,
 
     // Router
     getParams: router.getParams,
@@ -2237,30 +2237,8 @@ module.exports = {
 },{"mithril":5}],10:[function(_dereq_,module,exports){
 var mithril = _dereq_("mithril");
 
-function Module(options) {
-    if (options.view) {
-        this._view = options.view;
-    }
-
-    this._setOptions(options);
-};
-
-Module.prototype._setOptions = function(options) {
-    for(var key in options) {
-
-        if(key !== "view") {
-            this[key] = options[key];
-        }
-        
-    }
-
-    this.options = options;
-};
-
-Module.prototype.activate = function() {
-    var view = this._view;
-
-    return mithril.module(this._view.$el[0], {
+var initModule = function($rootEl, view) {
+    return mithril.module($rootEl[0], {
         controller: function() {
             return;
         }, 
@@ -2268,11 +2246,9 @@ Module.prototype.activate = function() {
             return view.render();
         }
     });
-};
+}
 
-module.exports = {
-    Module: Module
-};
+module.exports = initModule;
 
 },{"mithril":5}],11:[function(_dereq_,module,exports){
 var mithril = _dereq_("mithril"),
@@ -2310,6 +2286,7 @@ var updateRoute = function(route, params) {
     var route = route || window.location.pathname,
         params = params || {};
 
+    reqParams = params;
     coat.route(route, params);
 };
 
@@ -2452,7 +2429,7 @@ View.prototype.addEvent = function(eventName, selector, method) {
             throw new Error("Method `" + method + "` bound to event `" + eventName + "` does not exist in this view");
         }
 
-        method = $.proxy(method, this);
+        method.bind(this);
     }
 
     eventName += '.delegateEvents' + this.cid;
