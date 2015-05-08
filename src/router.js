@@ -1,34 +1,58 @@
-var mithril = require("mithril");
+var mithril = require("mithril"),
+    util = require("util"),
+    reqParams = {};
 
-function Router(options) {
-    this._setOptions(options || {});
+var getParams = function() {
+    var location;
 
-    this._route();
-}
+    if (!reqParams) {
+        location = window.location.search;
 
-Router.prototype._setOptions = function(options) {
-    for(var key in options) {
-        this[key] = options[key];
+        if (location) {
+            reqParams = util.deparam(location);
+        }
     }
 
-    if(!this.routes) {
+    return reqParams;
+}
+
+var setRoutes = function($rootEl, routes) {
+    if (!routes) {
         throw new Error("No routes specified");
     }
 
-    if(this.$rootEl.length === 0) {
+    if ($rootEl.length === 0) {
         throw new Error("No $rootElt specified");
     }
 
-    this.options = options;
-
     mithril.route.mode = "pathname";
-    this.root = "/";
+    mithril.route($rootEl[0], "/", routes);
 };
 
-Router.prototype._route = function() {
-    mithril.route(this.$rootEl[0], this.root, this.routes())
+var updateRoute = function(route, params) {
+    var route = route || window.location.pathname,
+        params = params || {};
+
+    coat.route(route, params);
+};
+
+var updateParams = function(params) {
+    var val;
+
+    for (key in params) {
+        val = params[key];
+
+        if (val.length == 0 && key in params) {
+            delete reqParams[key];
+        } else {
+            reqParams[key] = val;
+        }
+    }
 };
 
 module.exports = {
-    Router: Router
-}
+    getParams: getParams,
+    setRoutes: setRoutes,
+    updateRoute: updateRoute,
+    updateParams: updateParams
+};

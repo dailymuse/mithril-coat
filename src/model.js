@@ -5,9 +5,9 @@ MITHRIL_REQUEST_OPTS = ["user", "password", "data", "background", "initialValue"
 function Model (options) {
    // model keys is an array of all model keys on the object
     this.modelKeys = [];
-    this._updateProps(options)
+    this._updateProps(options);
 
-    // loading is a boolean which says whether the model is currently loading
+    // flag whether the model is currently loading
     this.loading = mithril.prop(false);
 };
 
@@ -18,12 +18,12 @@ Model.prototype.setProps = function (options) {
 
 // update model mithril properties on Model object
 Model.prototype._updateProps = function (options) {
-    for(var key in options) {
+    for (var key in options) {
         // if the key exists then update the mithril property
-        if(this[key]) {
-            this[key](model[key]);
+        if (this[key]) {
+            this[key](options[key]);
         } else {
-            this[key] = mithril.prop(model[key]);
+            this[key] = mithril.prop(options[key]);
             this.modelKeys.push(key);
         }
     }
