@@ -2237,8 +2237,8 @@ module.exports = {
 },{"mithril":5}],10:[function(_dereq_,module,exports){
 var mithril = _dereq_("mithril");
 
-var initModule = function($rootEl, view) {
-    return mithril.module($rootEl[0], {
+var initModule = function(view) {
+    return mithril.module(view.$el[0], {
         controller: function() {
             return;
         }, 
@@ -2302,6 +2302,8 @@ var updateParams = function(params) {
             reqParams[key] = val;
         }
     }
+
+    coat.route(window.location.pathname, reqParams)
 };
 
 module.exports = {

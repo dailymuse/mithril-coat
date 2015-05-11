@@ -49,6 +49,8 @@ var updateParams = function(params) {
             reqParams[key] = val;
         }
     }
+
+    coat.route(window.location.pathname, reqParams)
 };
 
 module.exports = {
