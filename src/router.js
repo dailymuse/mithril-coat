@@ -1,16 +1,12 @@
 var mithril = require("mithril"),
-    util = require("util"),
+    util = require("./util"),
     reqParams = {};
 
 var getParams = function() {
-    var location;
+    var location = window.location.search;
 
-    if (!reqParams) {
-        location = window.location.search;
-
-        if (location) {
-            reqParams = util.deparam(location);
-        }
+    if (Object.keys(reqParams).length === 0 && location) {
+        reqParams = util.deparam(location);
     }
 
     return reqParams;
@@ -50,7 +46,7 @@ var updateParams = function(params) {
         }
     }
 
-    coat.route(window.location.pathname, reqParams)
+    coat.route(window.location.pathname, reqParams);
 };
 
 module.exports = {
