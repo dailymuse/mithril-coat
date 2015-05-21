@@ -1,12 +1,16 @@
 var mithril = require("mithril"),
     util = require("./util"),
-    reqParams = {};
+    reqParams = null;
 
 var getParams = function() {
     var location = window.location.search;
 
-    if (Object.keys(reqParams).length === 0 && location) {
-        reqParams = util.deparam(location);
+    if (reqParams === null) {
+        if (location) {
+            reqParams = util.deparam(location);
+        } else {
+            reqParams = {};
+        }
     }
 
     return reqParams;

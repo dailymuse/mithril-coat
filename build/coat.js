@@ -1165,15 +1165,6 @@ License: MIT - http://mrgnrdrck.mit-license.org
 
 https://github.com/mroderick/PubSubJS
 */
-/*jslint white:true, plusplus:true, stupid:true*/
-/*global
-	setTimeout,
-	module,
-	exports,
-	define,
-	require,
-	window
-*/
 (function (root, factory){
 	'use strict';
 
@@ -1187,8 +1178,9 @@ https://github.com/mroderick/PubSubJS
 
     } else {
         // Browser globals
-        factory((root.PubSub = {}));
-
+        var PubSub = {};
+        root.PubSub = PubSub;
+        factory(PubSub);
     }
 }(( typeof window === 'object' && window ) || this, function (PubSub){
 	'use strict';
@@ -1257,7 +1249,7 @@ https://github.com/mroderick/PubSubJS
 			while( position !== -1 ){
 				topic = topic.substr( 0, position );
 				position = topic.lastIndexOf('.');
-				deliverMessage( message, topic, data );
+				deliverMessage( message, topic, data, immediateExceptions );
 			}
 		};
 	}
@@ -1340,8 +1332,19 @@ https://github.com/mroderick/PubSubJS
 
 	/* Public: Clears all subscriptions
 	 */
-	PubSub.clearAllSubscriptions = function clearSubscriptions(){
+	PubSub.clearAllSubscriptions = function clearAllSubscriptions(){
 		messages = {};
+	};
+
+	/*Public: Clear subscriptions by the topic
+	*/
+	PubSub.clearSubscriptions = function clearSubscriptions(topic){
+		var m; 
+		for (m in messages){
+			if (messages.hasOwnProperty(m) && m.indexOf(topic) === 0){
+				delete messages[m];
+			}
+		}
 	};
 
 	/* Public: removes subscriptions.
@@ -1368,7 +1371,7 @@ https://github.com/mroderick/PubSubJS
 			isToken    = !isTopic && typeof value === 'string',
 			isFunction = typeof value === 'function',
 			result = false,
-			m, message, t, token;
+			m, message, t;
 
 		if (isTopic){
 			delete messages[value];
@@ -1384,7 +1387,9 @@ https://github.com/mroderick/PubSubJS
 					result = value;
 					// tokens are unique, so we can just stop here
 					break;
-				} else if (isFunction) {
+				}
+
+				if (isFunction) {
 					for ( t in message ){
 						if (message.hasOwnProperty(t) && message[t] === value){
 							delete message[t];
@@ -1413,6 +1418,8 @@ Controller.prototype._setOptions = function(options) {
     for(var key in options) {
         this[key] = options[key];
     }
+
+    this.options = options
 };
 
 Controller.prototype.events = function() {
@@ -1513,6 +1520,8 @@ var mithril = _dereq_("mithril");
 MITHRIL_REQUEST_OPTS = ["user", "password", "data", "background", "initialValue", "unwrapSuccess", "unwrapError", "serialize", "extract", "type"]
 
 function Model (options) {
+    this.options = options;
+
    // model keys is an array of all model keys on the object
     this.modelKeys = [];
     this._updateProps(options);
@@ -1537,6 +1546,11 @@ Model.prototype._updateProps = function (options) {
             this.modelKeys.push(key);
         }
     }
+};
+
+// set the default model properties back to the default
+Model.prototype.setDefaultProps = function (options) {
+    this.setProps(this.options);
 };
 
 /**
@@ -1637,10 +1651,10 @@ module.exports = {
 },{"mithril":1}],6:[function(_dereq_,module,exports){
 var mithril = _dereq_("mithril");
 
-var initModule = function(view) {
+var initModule = function(view, controllerCb) {
     return mithril.mount(view.$el[0], {
         controller: function() {
-            return;
+            if (controllerCb) controllerCb();
         }, 
         view: function() {
             return view.render();
@@ -1653,13 +1667,17 @@ module.exports = initModule;
 },{"mithril":1}],7:[function(_dereq_,module,exports){
 var mithril = _dereq_("mithril"),
     util = _dereq_("./util"),
-    reqParams = {};
+    reqParams = null;
 
 var getParams = function() {
     var location = window.location.search;
 
-    if (Object.keys(reqParams).length === 0 && location) {
-        reqParams = util.deparam(location);
+    if (reqParams === null) {
+        if (location) {
+            reqParams = util.deparam(location);
+        } else {
+            reqParams = {};
+        }
     }
 
     return reqParams;

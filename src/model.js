@@ -3,6 +3,8 @@ var mithril = require("mithril");
 MITHRIL_REQUEST_OPTS = ["user", "password", "data", "background", "initialValue", "unwrapSuccess", "unwrapError", "serialize", "extract", "type"]
 
 function Model (options) {
+    this.options = options;
+
    // model keys is an array of all model keys on the object
     this.modelKeys = [];
     this._updateProps(options);
@@ -27,6 +29,11 @@ Model.prototype._updateProps = function (options) {
             this.modelKeys.push(key);
         }
     }
+};
+
+// set the default model properties back to the default
+Model.prototype.setDefaultProps = function (options) {
+    this.setProps(this.options);
 };
 
 /**

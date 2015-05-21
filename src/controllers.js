@@ -11,6 +11,8 @@ Controller.prototype._setOptions = function(options) {
     for(var key in options) {
         this[key] = options[key];
     }
+
+    this.options = options
 };
 
 Controller.prototype.events = function() {
