@@ -48,15 +48,6 @@ var deparam = function(qs) {
     return deparamed;
 };
 
-var captureEvents = function(view) {
-    return function(element, isInitialized) {
-        if(!isInitialized) {
-            view.setEl($(element));
-            view.config(element, isInitialized);
-        }
-    }
-};
-
 module.exports = {
     map: map,
     deparam: deparam,

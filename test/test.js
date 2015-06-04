@@ -1,5 +1,6 @@
 module.exports = function(view, state) {
-	return ([
+	var configObj = view._template ? {} : {'config':view._configDomEvents.bind(view)};
+	return (coat.m("div", configObj, [
 		(function() {
 			if(true) {
 				return (coat.m("ul", {}, coat.map(controller.users, function(user, key) {
@@ -11,10 +12,16 @@ module.exports = function(view, state) {
 		}).call(this),
 		coat.trust("&nbsp"),
 		coat.trust("'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'"),
-		require("foo.js")(view, state),
+		(function() {
+			view._template = true;
+			var template = require("./foo.js")(view, state);
+			view._template = false;
+			return template
+		}).call(this),
 		(function() {
 			var newView = new view.ButtonView({state: state.subModel});
-			return (coat.m('div', {config: coat.captureEvents(newView)}, newView.render()));
+			view._addSubview(newView)
+			return newView.render();
 		}).call(this)
-	]);
+	]));
 };

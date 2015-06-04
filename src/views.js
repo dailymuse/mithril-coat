@@ -27,12 +27,6 @@ View.prototype._setOptions = function(options) {
     this.cid = 'view' + (uniqueViewId++);
 };
 
-// used by templated view when el isn't set an initialization
-View.prototype.setEl = function(el) {
-    this.$el = el;
-    this._delegateEvents();
-}
-
 View.prototype.$ = function(selector) {
     return this.$el.find(selector);
 };
@@ -109,6 +103,9 @@ View.prototype._undelegateEvents = function() {
 
 var TemplatedView = function(options) {
     View.call(this, options);
+
+    this._tempSubviews = {};
+    this._subviews = {};
 };
 
 TemplatedView.prototype = Object.create(View.prototype);
@@ -119,9 +116,56 @@ TemplatedView.prototype.render = function() {
     return this.template(this, this.state);
 };
 
-TemplatedView.prototype.config = function() {
+TemplatedView.prototype._configDomEvents = function(element, isInit, context) {
+    this.$el = $(element);
+    this._delegateEvents();
+
+    context.onunload = this._onunload.bind(this);
+
+    this.config(element, isInit, context);
+
+    for (var cid in this._subviews) {
+        if (!(cid in this._tempSubviews)) {
+            this._subviews[cid]._onunload();
+            delete this._subviews[cid];
+        }        
+    }
+
+    this._subviews = this._tempSubviews;
+    this._tempSubviews = {};
+
+    return this;
+};
+
+TemplatedView.prototype.config = function(element, isInit, context) {
     return null;
-}
+};
+
+TemplatedView.prototype._onunload = function() {
+    this._undelegateEvents();
+    this._clearSubviews();
+    this.onunload();
+    return this;
+};
+
+TemplatedView.prototype.onunload = function() {
+    return null;
+};
+
+View.prototype._addSubview = function(view) {
+    this._tempSubviews[view.cid] = view;
+    return this;
+};
+
+View.prototype._clearSubviews = function() {
+    for (var viewName in this._subviews) {
+        this._subviews[viewName]._onunload();
+        delete this._subviews[viewName];
+    }
+
+    this._subviews = {};
+    return this;
+};
 
 module.exports = {
     View: View,

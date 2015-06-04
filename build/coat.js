@@ -1459,7 +1459,7 @@ var util = _dereq_("./util"),
     mithril = _dereq_("mithril"),
     PubSub = _dereq_("pubsub-js");
 
-var VERSION = "0.2.1";
+var VERSION = "0.2.0";
 
 options = {}
 
@@ -1777,15 +1777,6 @@ var deparam = function(qs) {
     return deparamed;
 };
 
-var captureEvents = function(view) {
-    return function(element, isInitialized) {
-        if(!isInitialized) {
-            view.setEl($(element));
-            view.config(element, isInitialized);
-        }
-    }
-};
-
 module.exports = {
     map: map,
     deparam: deparam,
@@ -1820,13 +1811,8 @@ View.prototype._setOptions = function(options) {
 
     this.options = options;
     this.cid = 'view' + (uniqueViewId++);
+    window.cid = this.cid;
 };
-
-// used by templated view when el isn't set an initialization
-View.prototype.setEl = function(el) {
-    this.$el = el;
-    this._delegateEvents();
-}
 
 View.prototype.$ = function(selector) {
     return this.$el.find(selector);
@@ -1904,6 +1890,9 @@ View.prototype._undelegateEvents = function() {
 
 var TemplatedView = function(options) {
     View.call(this, options);
+
+    this._tempSubviews = {};
+    this._subviews = {};
 };
 
 TemplatedView.prototype = Object.create(View.prototype);
@@ -1914,9 +1903,56 @@ TemplatedView.prototype.render = function() {
     return this.template(this, this.state);
 };
 
-TemplatedView.prototype.config = function() {
+TemplatedView.prototype._configDomEvents = function(element, isInit, context) {
+    this.$el = $(element);
+    this._delegateEvents();
+
+    context.onunload = this._onunload.bind(this);
+
+    this.config(element, isInit, context);
+
+    for (var cid in this._subviews) {
+        if (!(cid in this._tempSubviews)) {
+            this._subviews[cid]._onunload();
+            delete this._subviews[cid]
+        }        
+    }
+
+    this._subviews = this._tempSubviews;
+    this._tempSubviews = {};
+
+    return this;
+};
+
+TemplatedView.prototype.config = function(element, isInit, context) {
     return null;
-}
+};
+
+TemplatedView.prototype._onunload = function() {
+    this._undelegateEvents();
+    this._clearSubviews();
+    this.onunload();
+    return this;
+};
+
+TemplatedView.prototype.onunload = function() {
+    return null;
+};
+
+View.prototype._addSubview = function(view) {
+    this._tempSubviews[view.cid] = view;
+    return this;
+};
+
+View.prototype._clearSubviews = function() {
+    for (var viewName in this._subviews) {
+        this._subviews[viewName]._onunload();
+        delete this._subviews[viewName];
+    }
+
+    this._subviews = {};
+    return this;
+};
 
 module.exports = {
     View: View,
