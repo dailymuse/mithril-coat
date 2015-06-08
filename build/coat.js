@@ -1811,7 +1811,6 @@ View.prototype._setOptions = function(options) {
 
     this.options = options;
     this.cid = 'view' + (uniqueViewId++);
-    window.cid = this.cid;
 };
 
 View.prototype.$ = function(selector) {
@@ -1914,7 +1913,7 @@ TemplatedView.prototype._configDomEvents = function(element, isInit, context) {
     for (var cid in this._subviews) {
         if (!(cid in this._tempSubviews)) {
             this._subviews[cid]._onunload();
-            delete this._subviews[cid]
+            delete this._subviews[cid];
         }        
     }
 
