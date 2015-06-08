@@ -7,7 +7,7 @@ var util = require("./util"),
     mithril = require("mithril"),
     PubSub = require("pubsub-js");
 
-var VERSION = "0.2.0";
+var VERSION = "0.2.0-alpha";
 
 options = {}
 
