@@ -1,20 +1,26 @@
 var mithril = require("mithril"),
     util = require("./util"),
-    reqParams = null;
+    reqParams = null, 
+    prevRoute = "";
 
 var getParams = function() {
-    var location = window.location.search;
+    var location = window.location.search,
+        route = mithril.route();
 
-    if (reqParams === null) {
-        if (location) {
-            reqParams = util.deparam(location);
-        } else {
-            reqParams = {};
-        }
+    // keep a ref to reqParams so that getParams can be called as many times as 
+    // needed and is only updated if the current route has changed
+    if (prevRoute !== route) {
+        location = route.split("?")[1];
+        prevRoute = route;
+    } else {
+        return reqParams;
     }
 
+    // if passed an empty string util.deparam returns a dictionary of mapping of
+    // an empty to string to undefined, ensure that an empty string isn't passed
+    reqParams = location ? util.deparam(location) : {};
     return reqParams;
-}
+};
 
 var setRoutes = function($rootEl, routes) {
     if (!routes) {
@@ -30,6 +36,10 @@ var setRoutes = function($rootEl, routes) {
 };
 
 var _publishUpdate = function(route, params) {
+    // set the prevRoute so that getParams can return the params right away
+    // without needed to call deparam
+    prevRoute = coat.route();
+
     coat.publish("coat.route", {
         route: route,
         params: params
