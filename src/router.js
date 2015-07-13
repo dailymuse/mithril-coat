@@ -29,12 +29,20 @@ var setRoutes = function($rootEl, routes) {
     mithril.route($rootEl[0], "/", routes);
 };
 
+var _publishUpdate = function(route, params) {
+    coat.publish("coat.route", {
+        route: route,
+        params: params
+    });
+};
+
 var updateRoute = function(route, params) {
     var route = route || window.location.pathname,
         params = params || {};
 
     reqParams = params;
     coat.route(route, params);
+    _publishUpdate(route, params);
 };
 
 var updateParams = function(params) {
@@ -51,6 +59,7 @@ var updateParams = function(params) {
     }
 
     coat.route(window.location.pathname, reqParams);
+    _publishUpdate(window.location.pathname, reqParams);
 };
 
 module.exports = {
