@@ -724,7 +724,7 @@ var m = (function app(window, undefined) {
 			var queryIndex = currentRoute.indexOf("?")
 			var params = queryIndex > -1 ? parseQueryString(currentRoute.slice(queryIndex + 1)) : {}
 			for (var i in args) params[i] = args[i]
-			var querystring = buildQueryString(params)
+			var querystring = m.route.buildQueryString(params)
 			var currentPath = queryIndex > -1 ? currentRoute.slice(0, queryIndex) : currentRoute
 			if (querystring) currentRoute = currentPath + (currentPath.indexOf("?") === -1 ? "?" : "&") + querystring;
 
@@ -802,7 +802,7 @@ var m = (function app(window, undefined) {
 		if (m.route.mode != "hash" && $location.hash) $location.hash = $location.hash;
 		else window.scrollTo(0, 0)
 	}
-	function buildQueryString(object, prefix) {
+	m.route.buildQueryString = function(object, prefix) {
 		var duplicates = {}
 		var str = []
 		for (var prop in object) {
@@ -810,7 +810,7 @@ var m = (function app(window, undefined) {
 			var value = object[prop]
 			var valueType = type.call(value)
 			var pair = (value === null) ? encodeURIComponent(key) :
-				valueType === OBJECT ? buildQueryString(value, key) :
+				valueType === OBJECT ? m.route.buildQueryString(value, key) :
 				valueType === ARRAY ? value.reduce(function(memo, item) {
 					if (!duplicates[key]) duplicates[key] = {}
 					if (!duplicates[key][item]) {
@@ -840,9 +840,8 @@ var m = (function app(window, undefined) {
 		}
 		return params
 	}
-	m.route.buildQueryString = buildQueryString
 	m.route.parseQueryString = parseQueryString
-	
+
 	function reset(root) {
 		var cacheKey = getCellCacheKey(root);
 		clear(root.childNodes, cellCache[cacheKey]);
@@ -1060,7 +1059,7 @@ var m = (function app(window, undefined) {
 				+ (options.url.indexOf("?") > 0 ? "&" : "?")
 				+ (options.callbackKey ? options.callbackKey : "callback")
 				+ "=" + callbackKey
-				+ "&" + buildQueryString(options.data || {});
+				+ "&" + m.route.buildQueryString(options.data || {});
 			$document.body.appendChild(script)
 		}
 		else {
@@ -1094,7 +1093,7 @@ var m = (function app(window, undefined) {
 	function bindData(xhrOptions, data, serialize) {
 		if (xhrOptions.method === "GET" && xhrOptions.dataType != "jsonp") {
 			var prefix = xhrOptions.url.indexOf("?") < 0 ? "?" : "&";
-			var querystring = buildQueryString(data);
+			var querystring = m.route.buildQueryString(data);
 			xhrOptions.url = xhrOptions.url + (querystring ? prefix + querystring : "")
 		}
 		else xhrOptions.data = serialize(data);
@@ -1671,21 +1670,27 @@ module.exports = initModule;
 },{"mithril":1}],7:[function(_dereq_,module,exports){
 var mithril = _dereq_("mithril"),
     util = _dereq_("./util"),
-    reqParams = null;
+    reqParams = null, 
+    prevRoute = "";
 
 var getParams = function() {
-    var location = window.location.search;
+    var location = window.location.search,
+        route = mithril.route();
 
-    if (reqParams === null) {
-        if (location) {
-            reqParams = util.deparam(location);
-        } else {
-            reqParams = {};
-        }
+    // keep a ref to reqParams so that getParams can be called as many times as 
+    // needed and is only updated if the current route has changed
+    if (prevRoute !== route) {
+        location = route.split("?")[1];
+        prevRoute = route;
+    } else {
+        return reqParams;
     }
 
+    // if passed an empty string util.deparam returns a dictionary of mapping of
+    // an empty to string to undefined, ensure that an empty string isn't passed
+    reqParams = location ? util.deparam(location) : {};
     return reqParams;
-}
+};
 
 var setRoutes = function($rootEl, routes) {
     if (!routes) {
@@ -1701,6 +1706,10 @@ var setRoutes = function($rootEl, routes) {
 };
 
 var _publishUpdate = function(route, params) {
+    // set the prevRoute so that getParams can return the params right away
+    // without needed to call deparam
+    prevRoute = coat.route();
+
     coat.publish("coat.route", {
         route: route,
         params: params
