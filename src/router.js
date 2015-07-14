@@ -10,7 +10,6 @@ var getParams = function() {
     // keep a ref to reqParams so that getParams can be called as many times as 
     // needed and is only updated if the current route has changed
     if (route && prevRoute !== route) {
-        console.log("XXX")
         location = route.split("?")[1];
         prevRoute = route;
     } else {
