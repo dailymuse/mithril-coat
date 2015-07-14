@@ -83,6 +83,9 @@ Model.prototype._request = function (options) {
 
             // the request has finished loading
             _this.loading(false);
+            // ensure that if the request is submitted again it is marked as 
+            // successful
+            _this.requestError(false);
 
             // only want call success cb if was passed as opts
             if ("success" in options) { 
@@ -93,7 +96,7 @@ Model.prototype._request = function (options) {
             _this.loading(false);
             // request resulted in an error
             _this.requestError(true);
-            
+
             // only want to call error cb if was passed as opts
             if ("error" in options) { 
                 options.error(error, _this); 
