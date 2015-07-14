@@ -11,6 +11,7 @@ function Model (options) {
 
     // flag whether the model is currently loading
     this.loading = mithril.prop(false);
+    this.requestError = mithril.prop(false);
 };
 
 // method to ste properties for options
@@ -90,7 +91,9 @@ Model.prototype._request = function (options) {
         }, function(error) {   
             // finished loading
             _this.loading(false);
-
+            // request resulted in an error
+            _this.requestError(true);
+            
             // only want to call error cb if was passed as opts
             if ("error" in options) { 
                 options.error(error, _this); 
