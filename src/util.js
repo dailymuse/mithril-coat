@@ -50,6 +50,5 @@ var deparam = function(qs) {
 
 module.exports = {
     map: map,
-    deparam: deparam,
-    captureEvents: captureEvents
+    deparam: deparam
 };
