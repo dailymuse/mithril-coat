@@ -21,7 +21,6 @@ module.exports = {
     // Utils
     map: util.map,
     deparam: util.deparam,
-    captureEvents: util.captureEvents,
 
     // Views
     View: views.View,
