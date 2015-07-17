@@ -724,7 +724,7 @@ var m = (function app(window, undefined) {
 			var queryIndex = currentRoute.indexOf("?")
 			var params = queryIndex > -1 ? parseQueryString(currentRoute.slice(queryIndex + 1)) : {}
 			for (var i in args) params[i] = args[i]
-			var querystring = buildQueryString(params)
+			var querystring = m.route.buildQueryString(params)
 			var currentPath = queryIndex > -1 ? currentRoute.slice(0, queryIndex) : currentRoute
 			if (querystring) currentRoute = currentPath + (currentPath.indexOf("?") === -1 ? "?" : "&") + querystring;
 
@@ -802,7 +802,7 @@ var m = (function app(window, undefined) {
 		if (m.route.mode != "hash" && $location.hash) $location.hash = $location.hash;
 		else window.scrollTo(0, 0)
 	}
-	function buildQueryString(object, prefix) {
+	m.route.buildQueryString = function(object, prefix) {
 		var duplicates = {}
 		var str = []
 		for (var prop in object) {
@@ -810,7 +810,7 @@ var m = (function app(window, undefined) {
 			var value = object[prop]
 			var valueType = type.call(value)
 			var pair = (value === null) ? encodeURIComponent(key) :
-				valueType === OBJECT ? buildQueryString(value, key) :
+				valueType === OBJECT ? m.route.buildQueryString(value, key) :
 				valueType === ARRAY ? value.reduce(function(memo, item) {
 					if (!duplicates[key]) duplicates[key] = {}
 					if (!duplicates[key][item]) {
@@ -840,9 +840,8 @@ var m = (function app(window, undefined) {
 		}
 		return params
 	}
-	m.route.buildQueryString = buildQueryString
 	m.route.parseQueryString = parseQueryString
-	
+
 	function reset(root) {
 		var cacheKey = getCellCacheKey(root);
 		clear(root.childNodes, cellCache[cacheKey]);
@@ -987,8 +986,10 @@ var m = (function app(window, undefined) {
 		}
 	}
 	m.deferred.onerror = function(e) {
-		pendingRequests = 0;
-		if (type.call(e) === "[object Error]" && !e.constructor.toString().match(/ Error/)) throw e
+		if (type.call(e) === "[object Error]" && !e.constructor.toString().match(/ Error/)) {
+			pendingRequests = 0;
+			throw e;
+		}
 	};
 
 	m.sync = function(args) {
@@ -1058,7 +1059,7 @@ var m = (function app(window, undefined) {
 				+ (options.url.indexOf("?") > 0 ? "&" : "?")
 				+ (options.callbackKey ? options.callbackKey : "callback")
 				+ "=" + callbackKey
-				+ "&" + buildQueryString(options.data || {});
+				+ "&" + m.route.buildQueryString(options.data || {});
 			$document.body.appendChild(script)
 		}
 		else {
@@ -1092,7 +1093,7 @@ var m = (function app(window, undefined) {
 	function bindData(xhrOptions, data, serialize) {
 		if (xhrOptions.method === "GET" && xhrOptions.dataType != "jsonp") {
 			var prefix = xhrOptions.url.indexOf("?") < 0 ? "?" : "&";
-			var querystring = buildQueryString(data);
+			var querystring = m.route.buildQueryString(data);
 			xhrOptions.url = xhrOptions.url + (querystring ? prefix + querystring : "")
 		}
 		else xhrOptions.data = serialize(data);
@@ -1530,6 +1531,7 @@ function Model (options) {
     // flag whether the model is currently loading
     this.loading = mithril.prop(false);
     this.requestError = mithril.prop(false);
+    this._lastRequestId = 0;
 };
 
 // method to ste properties for options
@@ -1579,7 +1581,8 @@ Model.prototype._getUrl = function () {
 Model.prototype._request = function (options) {
     var _this = this,
         url = this._getUrl(),
-        requestOpts = {url: url, config: this.xhrConfig, method: options.method};
+        requestOpts = {url: url, config: this.xhrConfig, method: options.method},
+        requestId = ++this._lastRequestId;
 
     // only add an option if it is allowed by mithril
     for (var key in options) {
@@ -1596,18 +1599,24 @@ Model.prototype._request = function (options) {
     // make request and update model props
     mithril.request(requestOpts)
         .then(function(response) {
-            // update all properties in response as mithril props on model
-            _this._updateProps(response);
+            console.log(_this._lastRequestId)
+            console.log(requestId)
+            console.log(_this)
+            if (_this._lastRequestId === requestId) {
+                console.log("AAA")
+                // update all properties in response as mithril props on model
+                _this._updateProps(response);
 
-            // the request has finished loading
-            _this.loading(false);
-            // ensure that if the request is submitted again it is marked as 
-            // successful
-            _this.requestError(false);
+                // the request has finished loading
+                _this.loading(false);
+                // ensure that if the request is submitted again it is marked as 
+                // successful
+                _this.requestError(false);
 
-            // only want call success cb if was passed as opts
-            if ("success" in options) { 
-                options.success(response, _this); 
+                // only want call success cb if was passed as opts
+                if ("success" in options) { 
+                    options.success(response, _this); 
+                }
             }
         }, function(error) {   
             // finished loading

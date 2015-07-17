@@ -12,6 +12,7 @@ function Model (options) {
     // flag whether the model is currently loading
     this.loading = mithril.prop(false);
     this.requestError = mithril.prop(false);
+    this._lastRequestId = 0;
 };
 
 // method to ste properties for options
@@ -61,7 +62,8 @@ Model.prototype._getUrl = function () {
 Model.prototype._request = function (options) {
     var _this = this,
         url = this._getUrl(),
-        requestOpts = {url: url, config: this.xhrConfig, method: options.method};
+        requestOpts = {url: url, config: this.xhrConfig, method: options.method},
+        requestId = ++this._lastRequestId;
 
     // only add an option if it is allowed by mithril
     for (var key in options) {
@@ -78,18 +80,24 @@ Model.prototype._request = function (options) {
     // make request and update model props
     mithril.request(requestOpts)
         .then(function(response) {
-            // update all properties in response as mithril props on model
-            _this._updateProps(response);
+            console.log(_this._lastRequestId)
+            console.log(requestId)
+            console.log(_this)
+            if (_this._lastRequestId === requestId) {
+                console.log("AAA")
+                // update all properties in response as mithril props on model
+                _this._updateProps(response);
 
-            // the request has finished loading
-            _this.loading(false);
-            // ensure that if the request is submitted again it is marked as 
-            // successful
-            _this.requestError(false);
+                // the request has finished loading
+                _this.loading(false);
+                // ensure that if the request is submitted again it is marked as 
+                // successful
+                _this.requestError(false);
 
-            // only want call success cb if was passed as opts
-            if ("success" in options) { 
-                options.success(response, _this); 
+                // only want call success cb if was passed as opts
+                if ("success" in options) { 
+                    options.success(response, _this); 
+                }
             }
         }, function(error) {   
             // finished loading
