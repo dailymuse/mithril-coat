@@ -1599,11 +1599,7 @@ Model.prototype._request = function (options) {
     // make request and update model props
     mithril.request(requestOpts)
         .then(function(response) {
-            console.log(_this._lastRequestId)
-            console.log(requestId)
-            console.log(_this)
             if (_this._lastRequestId === requestId) {
-                console.log("AAA")
                 // update all properties in response as mithril props on model
                 _this._updateProps(response);
 
