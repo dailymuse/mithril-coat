@@ -1792,7 +1792,7 @@ var deparam = function(qs) {
         var pair = parts[i].split("=");
         // split the key to handle multi arguments
         var key = decodeURIComponent(pair[0]).split("[]")[0], 
-            value = decodeURIComponent(pair[1]);
+            value = decodeURIComponent(pair[1].replace("+", "%20"));
         var curValue = deparamed[key];
         var curType = typeof(curValue);
 
