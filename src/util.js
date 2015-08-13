@@ -32,9 +32,14 @@ var deparam = function(qs) {
         var pair = parts[i].split("=");
         // split the key to handle multi arguments
         var key = decodeURIComponent(pair[0]).split("[]")[0], 
-            value = decodeURIComponent(pair[1].replace("+", "%20"));
-        var curValue = deparamed[key];
-        var curType = typeof(curValue);
+            value = pair[1],
+            curValue = deparamed[key],
+            curType = typeof(curValue);
+
+        // convert a + to %20 which js consider encoding a space
+        if (value) value = value.replace("+", "%20");
+
+        value = decodeURIComponent(value);
 
         if(curType == "undefined") {
             deparamed[key] = value;
