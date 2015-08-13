@@ -1462,7 +1462,7 @@ var util = _dereq_("./util"),
     mithril = _dereq_("mithril"),
     PubSub = _dereq_("pubsub-js");
 
-var VERSION = "0.2.0-alpha";
+var VERSION = "0.2.0-delta";
 
 options = {}
 
