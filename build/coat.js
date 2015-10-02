@@ -1462,7 +1462,7 @@ var util = _dereq_("./util"),
     mithril = _dereq_("mithril"),
     PubSub = _dereq_("pubsub-js");
 
-var VERSION = "0.2.0-delta";
+var VERSION = "0.2.0-epsilon";
 
 options = {}
 
@@ -1918,7 +1918,9 @@ View.prototype._delegateEvents = function() {
 };
 
 View.prototype._undelegateEvents = function() {
-    this.$el.off('.delegateEvents' + this.cid);
+    if (this.$el) {
+        this.$el.off('.delegateEvents' + this.cid);
+    }
     return this;
 };
 

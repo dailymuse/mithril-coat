@@ -97,7 +97,9 @@ View.prototype._delegateEvents = function() {
 };
 
 View.prototype._undelegateEvents = function() {
-    this.$el.off('.delegateEvents' + this.cid);
+    if (this.$el) {
+        this.$el.off('.delegateEvents' + this.cid);
+    }
     return this;
 };
 
