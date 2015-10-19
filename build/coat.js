@@ -1557,6 +1557,20 @@ Model.prototype.setDefaultProps = function (options) {
     this.setProps(this.options);
 };
 
+// returns all properties on a model as an object
+Model.prototype.getProps = function() {
+    var data = {},
+        key = null;
+
+    // loop over all model keys 
+    for (var i = 0; i < this.modelKeys.length; i++) {
+        key = this.modelKeys[i]
+        data[key] = this[key];
+    }
+
+    return data;
+};
+
 /**
  * function to extend that allows you set xhrconfig status for all
  * mithril requests
@@ -1940,8 +1954,8 @@ TemplatedView.prototype.render = function() {
 };
 
 TemplatedView.prototype._configDomEvents = function(element, isInit, context) {
-    // only bind events if the $el on the view doesn't already exist. If it does
-    // then 
+    // only bind events if the $el on the view doesn't already exist. This way 
+    // we aren't constantly reconfiguring dom elts on every redraw.
     if (!this.$el) {
         this.$el = $(element);
         this._delegateEvents();
