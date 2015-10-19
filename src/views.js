@@ -119,10 +119,12 @@ TemplatedView.prototype.render = function() {
 };
 
 TemplatedView.prototype._configDomEvents = function(element, isInit, context) {
-    this.$el = $(element);
-    this._delegateEvents();
-
-    context.onunload = this._onunload.bind(this);
+    // only bind events if the $el on the view doesn't already exist. This way 
+    // we aren't constantly reconfiguring dom elts on every redraw.
+    if (!this.$el) {
+        this.$el = $(element);
+        this._delegateEvents();
+    }
 
     this.config(element, isInit, context);
 
