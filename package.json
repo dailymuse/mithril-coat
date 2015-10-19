@@ -2,7 +2,7 @@
   "author": "The Muse <yusuf@themuse.com> (https://www.themuse.com/)",
   "name": "mithril-coat",
   "description": "A minimalistic frontend web framework that builds on Mithril",
-  "version": "0.2.0-epsilon",
+  "version": "0.2.0-zeta",
   "main": "lib/index.js",
   "bin": {
     "coat": "bin/coat.js"
