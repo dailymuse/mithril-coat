@@ -1462,7 +1462,7 @@ var util = _dereq_("./util"),
     mithril = _dereq_("mithril"),
     PubSub = _dereq_("pubsub-js");
 
-var VERSION = "0.2.0-zeta";
+var VERSION = "0.2.0-eta";
 
 options = {}
 
@@ -1954,9 +1954,12 @@ TemplatedView.prototype.render = function() {
 };
 
 TemplatedView.prototype._configDomEvents = function(element, isInit, context) {
-    // only bind events if the $el on the view doesn't already exist. This way 
-    // we aren't constantly reconfiguring dom elts on every redraw.
-    if (!this.$el) {
+    // only bind events if the $el on the view doesn't already exist or the elt
+    // changes. This way we aren't constantly reconfiguring dom elts on every 
+    // redraw.
+    if (!this.$el || this.$el[0] !== element) {
+        this._undelegateEvents();
+
         this.$el = $(element);
         this._delegateEvents();
     }

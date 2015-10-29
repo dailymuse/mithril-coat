@@ -1,7 +1,7 @@
 {
   "name": "mithril-coat",
   "description": "\"A minimalistic frontend web framework that builds on Mithril\"",
-  "version": "0.2.0-zeta",
+  "version": "0.2.0-eta",
   "homepage": "https://github.com/dailymuse/mithril-coat",
   "authors": [
     "The Muse <yusuf@themuse.com> (https://www.themuse.com/)"
