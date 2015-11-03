@@ -1462,7 +1462,7 @@ var util = _dereq_("./util"),
     mithril = _dereq_("mithril"),
     PubSub = _dereq_("pubsub-js");
 
-var VERSION = "0.2.0-eta";
+var VERSION = "0.2.0-theta";
 
 options = {}
 
@@ -1565,7 +1565,7 @@ Model.prototype.getProps = function() {
     // loop over all model keys 
     for (var i = 0; i < this.modelKeys.length; i++) {
         key = this.modelKeys[i];
-        data[key] = this[key];
+        data[key] = this[key]();
     }
 
     return data;

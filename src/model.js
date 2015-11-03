@@ -46,7 +46,7 @@ Model.prototype.getProps = function() {
     // loop over all model keys 
     for (var i = 0; i < this.modelKeys.length; i++) {
         key = this.modelKeys[i];
-        data[key] = this[key];
+        data[key] = this[key]();
     }
 
     return data;
