@@ -1,35 +1,35 @@
 # About Mithril Coat
-Mithril Coat is a minimalistic frontend web framework that builds on [Mithril](https://github.com/lhorie/mithril). Mithril Coat provides two tools that are meant to be used in conjuction with each other. 
+Mithril Coat is a minimalistic frontend web framework that builds on [Mithril](https://github.com/lhorie/Mithril). Mithril Coat provides two tools that are meant to be used in conjunction with each other. 
 
 * A lightweight library around Mithril that provides code structure and a flux like architecture using [pubsub-js](https://github.com/mroderick/PubSubJS).
-* A templating language that uses HTML tags that compiles to mithril templates.
+* A templating language that uses HTML tags that compiles to Mithril templates.
 
-Mithril Coat requires jQuery and is expected to be used in conjuction with Browserify (we provide a browserify plugin, [Coatify](https://github.com/dailymuse/coatify) to require mithril coat templates via Browserify). 
+Mithril Coat requires jQuery and is expected to be used in conjunction with Browserify (we provide a browserify plugin, [Coatify](https://github.com/dailymuse/coatify) to require Mithril Coat templates via Browserify). 
 
-NOTE: the documentation assumes a familiarity with mithril and terminology surrounding mithril.
+NOTE: the documentation assumes a familiarity with Mithril and terminology surrounding Mithril.
 
 ## Install
-To install the front-end package via bower `bower install mithril-coat`.
+To install the front-end package via bower `bower install Mithril-coat`.
 
-To install the template compiler `npm install mithril-coat -g`.
+To install the template compiler `npm install Mithril-coat -g`.
 
 ## Mithril Coat
 Mithril Coat is composed of three primary objects (View, Controllers, and Models) as well as some utility functions. 
-Views use Model properties to correctly display the correct html through a mithril coat template. Views also listen for dom events and using mithril coat's global pubsub system, publish that a dom interaction has occcured. Controllers can listen to specific events that the views publish and determine whether a model should be manipulated and whether an autoredraw should occur. This allows mithril coat to have a flux like architecture and allows for Mithril Coat to have "stateless" controllers (since controllers just need to know they are manipulating a model, but not which specific model).
+Views use Model properties to correctly display the correct html through a Mithril Coat template. Views also listen for dom events and using Mithril Coat's global pubsub system, publish that a dom interaction has occcured. Controllers can listen to specific events that the views publish and determine whether a model should be manipulated and whether an autoredraw should occur. This allows Mithril Coat to have a flux like architecture and allows for Mithril Coat to have "stateless" controllers (since controllers just need to know they are manipulating a model, but not which specific model).
 
-Mithril coat also provides some utility functions for routing and initializing mithril components.
+Mithril Coat also provides some utility functions for routing and initializing Mithril components.
 
 Here are a few notions around Mithril Coat:
 * Views should never manipulate Models
 * Models should only be manipulated by Controllers
 * Views should not call methods on Controllers and vice versa
-* Views and Controllers should interact via mithril coat's pubsub system
+* Views and Controllers should interact via Mithril Coat's pubsub system
 * Mithril autoredraw function should only be called from a Controller
 
 NOTE: Views, Controller, and Models all follow prototypical inheritance. They all accept an object when initialized. All key, values of that object will be bound as properties of that Object.
 
 ## Views
-Mithril Coat Views are very similar to [Backbone](http://backbonejs.org/) and provide a very simple interface to work with dom events. Mithril coat has a notion of 2 different types of views: 
+Mithril Coat Views are very similar to [Backbone](http://backbonejs.org/) and provide a very simple interface to work with dom events. Mithril Coat has a notion of 2 different types of views: 
 
 1. Base Views - coat.View
 2. Templated Views - coat.TemplatedView 
@@ -66,17 +66,17 @@ view.prototype.onClickLink = function(e) {
 returns a jQuery selector that match the selector inside the $el.
 
 ### new coat.TemplatedView({})
-Extends coat.View and adds additional functionality for views that use mithril templates. 
+Extends coat.View and adds additional functionality for views that use Mithril templates. 
 
 All `coat.TemplatedView` expect a `template` property on instantiation. This will be the template that the view renders. 
 
-If you want to pass model data to a view it should be done via the `state` property which is exposed to the mithril coat template.
+If you want to pass model data to a view it should be done via the `state` property which is exposed to the Mithril Coat template.
 
 Some things to note about Mithril Coat templated views:
-* each mithril coat template is wrapped in a div generated by mithril coat.
-* mithril coat ensures that events are cleaned up on each redraw.
-* mithril coat templates have a `view` tag to generate subviews, templated views clean up their subviews and all the events for these subviews.
-* for views that are part of an SPA it is not necessary to pass in an `$el`, however for views that use `coat.initModule()` to initialize a mithril coat component it's necessary to pass an `$el` to the view object.
+* each Mithril Coat template is wrapped in a div generated by Mithril Coat.
+* Mithril Coat ensures that events are cleaned up on each redraw.
+* Mithril Coat templates have a `view` tag to generate subviews, templated views clean up their subviews and all the events for these subviews.
+* for views that are part of an SPA it is not necessary to pass in an `$el`, however for views that use `coat.initModule()` to initialize a Mithril Coat component it's necessary to pass an `$el` to the view object.
 
 ```javascript
 var sampleTemplate = require("./template.coat")
@@ -91,18 +91,18 @@ var templatedView = new coat.TemplatedView({
 ```
 
 #### coat.TemplatedView.prototype.render()
-Should be called to render the mithril template.
+Should be called to render the Mithril template.
 
 #### coat.TemplatedView.prototype.config(element, isInit, context) 
 The config method is called whenever the current template is rendered to the page.
 
-NOTE: these arguments are the same as Mithril passes to the [config attribute](https://lhorie.github.io/mithril/mithril.html#the-config-attribute).
+NOTE: these arguments are the same as Mithril passes to the [config attribute](https://lhorie.github.io/Mithril/Mithril.html#the-config-attribute).
 
 #### coat.TemplatedView.prototype.onunload()
 The current templated view was unloaded. Can be used if you need to call methods on a third party library when a view is unloaded. 
 
 ## Controllers
-Mithril coat controllers are meant to be used to manipulate Models and to initiate mithril redraws (either via Model requests or via autoredraws). 
+Mithril Coat controllers are meant to be used to manipulate Models and to initiate Mithril redraws (either via Model requests or via autoredraws). 
 
 ### new coat.Controller({})
 Controllers do not take any default arguments.
@@ -146,27 +146,27 @@ controller.prototype.buttonClicked = function() {
 ```
 
 ## Models 
-Mithril coat models provide convenience methods for interacting with Mithril models. And dealing with state thorughout your application.
+Mithril Coat models provide convenience methods for interacting with Mithril models. And dealing with state thorughout your application.
 
 ### new coat.Model({})
 All keys and values that are passed in the opts object are set as properties on the Model as Mithril props respectively. 
 
 ```javascript
 var model = new coat.Model({
-    name: "mithril-coat",
+    name: "Mithril-coat",
     version: 1.0,
 });
 
-console.log(model.name()) // prints "mithril-coat" to the console
+console.log(model.name()) // prints "Mithril-coat" to the console
 ```
 
 There are also some keys that are available on every model:
 * `this.modelKeys` is a list of all keys that are in the object passed into the constructor. All json keys that is returned from model requests are also added to the modelKeys list. 
-* `this.loading()` a boolean mithril prop that indicates that the model is currently being requsted. Mithril coat automatically sets this the value of this property. It can be used to show a loading spinner in a templated view.
-* `this.requestError()` a boolean mithril prop that indicates whether there was a request error
+* `this.loading()` a boolean Mithril prop that indicates that the model is currently being requested. Mithril Coat automatically sets this the value of this property. It can be used to show a loading spinner in a templated view.
+* `this.requestError()` a boolean Mithril prop that indicates whether there was a request error
 
 ### model.setProps({})
-Method to set properties on the model. Accepts a key value object that are set as mithril props on the model.
+Method to set properties on the model. Accepts a key value object that are set as Mithril props on the model.
 
 ```javascript
 model.setProps({
@@ -177,14 +177,14 @@ console.log(model.updatedVersion) // 2.0
 ```
 
 ### model.getProps()
-Returns all the mithril properties on the model as an object mapping key to value.
+Returns all the Mithril properties on the model as an object mapping key to value.
 
 ### model.url || model.url()
 the url can be set as a property on the Model oras a function. It should return a url string to request
 
 ```javascript
 model.prototype.url = function() {
-    return "/api/mithril-coat/" + this.version();
+    return "/api/Mithril-coat/" + this.version();
 }
 ```
 
@@ -199,7 +199,7 @@ model.prototype.xhrConfig = function(xhr) {
 ```
 
 ### Model Requests
-In addition to allowing you to set the underlying xhr requests - mithril coat provides a few other convenience methods. All method calls accept an object of key values. Possible keys that mithril coat will place in the options m.request include:
+In addition to allowing you to set the underlying xhr requests - Mithril Coat provides a few other convenience methods. All method calls accept an object of key values. Possible keys that Mithril Coat will place in the options m.request include:
 
 * "user" 
 * "password"
@@ -229,18 +229,18 @@ model.get({
 ```
 
 #### model.save({})
-By default if a `"method"` key is not set in opts and an id is set on the model then mithril coat will set the method request to `"PUT"` and if there is not id it will set the method request to `"POST"`. However there are times when you should submit a `"PUT"` request even though an id exists - therefore we provide the flexibility to determine which method to use. 
+By default if a `"method"` key is not set in opts and an id is set on the model then Mithril Coat will set the method request to `"PUT"` and if there is not id it will set the method request to `"POST"`. However there are times when you should submit a `"PUT"` request even though an id exists - therefore we provide the flexibility to determine which method to use. 
 
 #### model.delete({})
 Submits a delete request to the server.
 
 ## Routing and Modules
-Mithril coat provides some nice utility methods that wrap around Mithril's routing and components. 
+Mithril Coat provides some nice utility methods that wrap around Mithril's routing and components. 
 
 ### coat.setRoutes($rootEl, routes)
-Sets the mithril coat routes for the single page application. Mithril coat sets mithril to route on the pathname.
+Sets the Mithril Coat routes for the single page application. Mithril Coat sets Mithril to route on the pathname.
 
-`$rooEl` is a jQuery object in which the the mithril templates will be rendered. `routes` should be an object mapping route names to mithril a component (`{controller: function() {}, view: () -> console.log('render some view here via view.render()')}`).
+`$rooEl` is a jQuery object in which the the Mithril templates will be rendered. `routes` should be an object mapping route names to Mithril a component (`{controller: function() {}, view: () -> console.log('render some view here via view.render()')}`).
 
 ```javascript
 template = require("./some_template.coat")
@@ -264,7 +264,7 @@ coat.setRoutes($("body"), {
 ```
 
 ### coat.getParams()
-Gets the current query parameters in the url. This function can only be called after `coat.setRoutes` has been called. Returns a maping of query parameter keys to their respective values.
+Gets the current query parameters in the url. This function can only be called after `coat.setRoutes` has been called. Returns a mapping of query parameter keys to their respective values.
 
 ### coat.updateRoute(route, params, shouldReplaceHistory)
 Routes to the new route and the query parameters listed. 
@@ -290,10 +290,10 @@ A convenient wrapper to initialize a mithirl component.
     })
 
     /*
-    @param [coat.TemplatedView] view a mithril coat view that's used to mount the 
-    mithril component
+    @param [coat.TemplatedView] view a Mithril Coat view that's used to mount the 
+    Mithril component
     @param [Function] controllerCb a controller callback that's called in the 
-    mithril component controller
+    Mithril component controller
     */
     coat.initModule(view, function() {
         console.log('some action to take before the view is rendered')
@@ -302,13 +302,13 @@ A convenient wrapper to initialize a mithirl component.
 ```
 
 ## Mithril Coat Templates
-Mithril coat templates are mithril templates that are written in HTML. The files are saved with a .coat extension and are then compiled to JavaScript by the mithril coat compiler. 
+Mithril Coat templates are Mithril templates that are written in HTML. The files are saved with a .coat extension and are then compiled to JavaScript by the Mithril Coat compiler. 
 
-Mithril coat templates are simply html templates that are compiled to mithril. The templating language is expected to be used in conjunction with [Browserify](http://browserify.org/) as it `module exports` all the templates. You can use the [Coatify](https://github.com/dailymuse/coatify) plugin to `require` Mithril Coat Templates.
+Mithril Coat templates are simply html templates that are compiled to Mithril. The templating language is expected to be used in conjunction with [Browserify](http://browserify.org/) as it `module exports` all the templates. You can use the [Coatify](https://github.com/dailymuse/coatify) plug-in to `require` Mithril Coat Templates.
 
 All Mithril Coat templates receive two variables: `(view, state)`. `view` is a reference to the view object that has the template so any property on the view is available to you via the view object. `state` is the state that was passed in the view on initialization. `state` is the place where any model or ui data should exist. 
 
-Mithril coat template support all html tags and have an additional 7 html tags
+Mithril Coat template support all html tags and have an additional 7 html tags
 ```
 * if, elif, else
 * val
@@ -323,7 +323,7 @@ Mithril coat template support all html tags and have an additional 7 html tags
 Every if and elif tag need to have an `expr` attribute on it and the value of `expr` should be a JavaScript expression. All if, elif, and else tags need to be closed. All tags must also have valid content placed in between their tags.
 
 ``` html
-<!-- remember state is a varibale that's passed into a mithril-template from the view -->
+<!-- remember state is a varibale that's passed into a Mithril-template from the view -->
 <if expr="state.window()">
     <h1>The Window objext exist</h1>
 </if>
@@ -335,7 +335,7 @@ Every if and elif tag need to have an `expr` attribute on it and the value of `e
 </else>
 
 <!-- 
-NOTE THIS IS WILL FAIL COMPILATION IN MITHRIL COAT because there are no contents in between 
+NOTE THIS IS WILL FAIL COMPILATION IN Mithril Coat because there are no contents in between 
 <if expr="state.window">
 
 </if>
@@ -356,7 +356,7 @@ the paragraph tag
 ```
 
 #### `<raw val||expr="" />`
-`raw` wraps a string or a JavaScript expression in `mithril.trust`. The two different attributes are `val` and `expr`. 
+`raw` wraps a string or a JavaScript expression in `Mithril.trust`. The two different attributes are `val` and `expr`. 
 
 `val` accepts a JavaScript expression, so if `state` has a property `message: "hello world <span>The Muse</span>", `val` should be used to display `state.message()`.
 
@@ -419,7 +419,7 @@ Views are a means to include other templated views in the current view. There ar
 <view name="view.subview" args="{state: state.subview}" />
 ```
 
-The $el for the view is automatically created and bounded by mithril coat. 
+The $el for the view is automatically created and bounded by Mithril Coat. 
 
 
 
