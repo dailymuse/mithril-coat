@@ -3,6 +3,12 @@ var mithril = require("mithril"),
     reqParams = null, 
     prevRoute = "";
 
+/*
+get the current query parameters of the current mithril page. Can only be called 
+after setRoutes has been called because it relies on mithril.route(), which 
+can't be called till after the routes have been initialized. Returns a mapping
+of query parameter keys to their values.
+*/
 var getParams = function() {
     var location = window.location.search,
         route = mithril.route();
@@ -22,6 +28,12 @@ var getParams = function() {
     return reqParams;
 };
 
+/* 
+sets the routes for the current page.
+@param [jQuery] $rootEl the jQuery element to insert the mithril coat component
+@param [Object] routes routes is an object mapping the path to the mithril 
+component for that route just like in mithril. 
+*/
 var setRoutes = function($rootEl, routes) {
     if (!routes) {
         throw new Error("No routes specified");
@@ -35,7 +47,7 @@ var setRoutes = function($rootEl, routes) {
     mithril.route($rootEl[0], "/", routes);
 };
 
-var _publishUpdate = function(route, params) {
+var publishUpdate = function(route, params) {
     // set the prevRoute so that getParams can return the params right away
     // without needed to call deparam
     prevRoute = coat.route();
@@ -46,30 +58,48 @@ var _publishUpdate = function(route, params) {
     });
 };
 
-var updateRoute = function(route, params) {
+/* 
+update the current route - used when you want to update the path or when you 
+want to remove the current params that are being routed on.
+@param [String] route the new path
+@param [Object] params a key value mapping of query parameters to their values
+@param [Boolean] shouldReplaceHistory boolean for whether the window history
+should be replaced
+*/
+var updateRoute = function(route, params, shouldReplaceHistory) {
     var route = route || window.location.pathname,
         params = params || {};
 
     reqParams = params;
-    coat.route(route, params);
-    _publishUpdate(route, params);
+    coat.route(route, params, shouldReplaceHistory);
+    publishUpdate(route, params);
 };
 
-var updateParams = function(params) {
-    var val;
+/* 
+update the params of the current page. this provides a convenience when there
+are a lot of existing parameters and you only need to update a few. it 
+auto deletes parameters that aren't needed anymore and routes to the current
+location.
+@param [Object] params a key value mapping of query parameters to their values
+@param [Boolean] shouldReplaceHistory boolean for whether the window history
+should be replaced
+*/
+var updateParams = function(params, shouldReplaceHistory) {
+    var val,
+        key;
 
     for (key in params) {
         val = params[key];
 
-        if (val.length == 0 && key in params) {
+        if (val.length === 0 && key in params) {
             delete reqParams[key];
         } else {
             reqParams[key] = val;
         }
     }
 
-    coat.route(window.location.pathname, reqParams);
-    _publishUpdate(window.location.pathname, reqParams);
+    coat.route(window.location.pathname, reqParams, shouldReplaceHistory);
+    publishUpdate(window.location.pathname, reqParams);
 };
 
 module.exports = {

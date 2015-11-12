@@ -730,6 +730,7 @@ var m = (function app(window, undefined) {
 
 			var shouldReplaceHistoryEntry = (arguments.length === 3 ? arguments[2] : arguments[1]) === true || oldRoute === currentRoute;
 
+
 			if (window.history.pushState) {
 				computePreRedrawHook = setScroll
 				computePostRedrawHook = function() {
@@ -1418,26 +1419,36 @@ function Controller(obj) {
 };
 
 Controller.prototype._setOptions = function(options) {
-    for(var key in options) {
+    var key;
+    
+    for (key in options) {
         this[key] = options[key];
     }
 
-    this.options = options
+    this.options = options;
 };
 
+// the events to be bound to pubsub-js
 Controller.prototype.events = function() {
     return {};
 };
 
+// set events for pubsub-js
 Controller.prototype._setEvents = function() {
-    for(var key in this._events) {
-        var func = this._events[key];
+    var key,
+        func;
+
+    for (key in this._events) {
+        func = this._events[key];
         PubSub.subscribe(key, func.bind(this));
     }
 };
 
-// auto redraw is a wrapper around mithrils start and end computation
-// for redrawing a view
+/* 
+wrapper around mithrils start and end computation for redrawing a view
+@param [Function] cb a callback to take 'action' during the autoredraw
+@param [Object] opts object of options that are passed to the callback
+*/
 Controller.prototype.autoredraw = function(cb, opts) {
     mithril.startComputation();
 
@@ -1462,7 +1473,7 @@ var util = _dereq_("./util"),
     mithril = _dereq_("mithril"),
     PubSub = _dereq_("pubsub-js");
 
-var VERSION = "0.2.0-theta";
+var VERSION = "0.2.0";
 
 options = {}
 
@@ -1534,13 +1545,13 @@ function Model (options) {
     this._lastRequestId = 0;
 };
 
-// method to ste properties for options
-Model.prototype.setProps = function (options) {
+// method to set mithril coat properties on the model
+Model.prototype.setProps = function(options) {
     this._updateProps(options);
 };
 
 // update model mithril properties on Model object
-Model.prototype._updateProps = function (options) {
+Model.prototype._updateProps = function(options) {
     for (var key in options) {
         // if the key exists then update the mithril property
         if (this[key]) {
@@ -1553,16 +1564,16 @@ Model.prototype._updateProps = function (options) {
 };
 
 // set the default model properties back to the default
-Model.prototype.setDefaultProps = function (options) {
+Model.prototype.setDefaultProps = function(options) {
     this.setProps(this.options);
 };
 
-// returns all properties on a model as an object
+// returns all properties on a model as an object mapping of keys to values
 Model.prototype.getProps = function() {
     var data = {},
         key = null;
 
-    // loop over all model keys 
+    // loop over all model keys and set the values for the returned object
     for (var i = 0; i < this.modelKeys.length; i++) {
         key = this.modelKeys[i];
         data[key] = this[key]();
@@ -1575,8 +1586,8 @@ Model.prototype.getProps = function() {
  * function to extend that allows you set xhrconfig status for all
  * mithril requests
  */
-Model.prototype.xhrConfig = function (xhr) {
-    return 
+Model.prototype.xhrConfig = function(xhr) {
+    return null;
 };
 
 /**
@@ -1592,7 +1603,7 @@ Model.prototype._getUrl = function () {
  * Internal method used to make mithril requests and only submit the correct 
  * request options to mithril
  */
-Model.prototype._request = function (options) {
+Model.prototype._request = function(options) {
     var _this = this,
         url = this._getUrl(),
         requestOpts = {url: url, config: this.xhrConfig, method: options.method},
@@ -1641,7 +1652,11 @@ Model.prototype._request = function (options) {
         })
 };
 
-Model.prototype.delete = function (options) {
+/* 
+Submits a delete request to the server.
+@param [Object] options the request options for this request
+*/
+Model.prototype.delete = function(options) {
     var options = options ? options : {};
 
     if (!("method" in options)) {
@@ -1651,7 +1666,11 @@ Model.prototype.delete = function (options) {
     this._request(options);
 };
 
-Model.prototype.get = function (options) {
+/* 
+Submits a get request to the server.
+@param [Object] options the request options for this request
+*/
+Model.prototype.get = function(options) {
     var options = options ? options : {};
 
     if (!("method" in options)) {
@@ -1661,9 +1680,14 @@ Model.prototype.get = function (options) {
     this._request(options);
 };
 
-Model.prototype.save = function (options) {
+/* 
+Submits a PUT or POST request to the server.
+@param [Object] options the request options for this request
+*/
+Model.prototype.save = function(options) {
     var options = options ? options : {};
 
+    // if the method isn't set and there is id then default to a put 
     if (!("method" in options)) {
         options.method = this.id ? "PUT" : "POST";
     }
@@ -1677,6 +1701,13 @@ module.exports = {
 },{"mithril":1}],6:[function(_dereq_,module,exports){
 var mithril = _dereq_("mithril");
 
+/*
+a convenient wrapper to initialize a mithril module.
+@param [coat.TemplatedView] view a mithril coat view that's used to mount the 
+mithril component
+@param [Function] controllerCb a controller callback that's called in the 
+mithril component controller
+*/
 var initModule = function(view, controllerCb) {
     return mithril.mount(view.$el[0], {
         controller: function() {
@@ -1696,6 +1727,12 @@ var mithril = _dereq_("mithril"),
     reqParams = null, 
     prevRoute = "";
 
+/*
+get the current query parameters of the current mithril page. Can only be called 
+after setRoutes has been called because it relies on mithril.route(), which 
+can't be called till after the routes have been initialized. Returns a mapping
+of query parameter keys to their values.
+*/
 var getParams = function() {
     var location = window.location.search,
         route = mithril.route();
@@ -1715,6 +1752,12 @@ var getParams = function() {
     return reqParams;
 };
 
+/* 
+sets the routes for the current page.
+@param [jQuery] $rootEl the jQuery element to insert the mithril coat component
+@param [Object] routes routes is an object mapping the path to the mithril 
+component for that route just like in mithril. 
+*/
 var setRoutes = function($rootEl, routes) {
     if (!routes) {
         throw new Error("No routes specified");
@@ -1728,7 +1771,7 @@ var setRoutes = function($rootEl, routes) {
     mithril.route($rootEl[0], "/", routes);
 };
 
-var _publishUpdate = function(route, params) {
+var publishUpdate = function(route, params) {
     // set the prevRoute so that getParams can return the params right away
     // without needed to call deparam
     prevRoute = coat.route();
@@ -1739,30 +1782,48 @@ var _publishUpdate = function(route, params) {
     });
 };
 
-var updateRoute = function(route, params) {
+/* 
+update the current route - used when you want to update the path or when you 
+want to remove the current params that are being routed on.
+@param [String] route the new path
+@param [Object] params a key value mapping of query parameters to their values
+@param [Boolean] shouldReplaceHistory boolean for whether the window history
+should be replaced
+*/
+var updateRoute = function(route, params, shouldReplaceHistory) {
     var route = route || window.location.pathname,
         params = params || {};
 
     reqParams = params;
-    coat.route(route, params);
-    _publishUpdate(route, params);
+    coat.route(route, params, shouldReplaceHistory);
+    publishUpdate(route, params);
 };
 
-var updateParams = function(params) {
-    var val;
+/* 
+update the params of the current page. this provides a convenience when there
+are a lot of existing parameters and you only need to update a few. it 
+auto deletes parameters that aren't needed anymore and routes to the current
+location.
+@param [Object] params a key value mapping of query parameters to their values
+@param [Boolean] shouldReplaceHistory boolean for whether the window history
+should be replaced
+*/
+var updateParams = function(params, shouldReplaceHistory) {
+    var val,
+        key;
 
     for (key in params) {
         val = params[key];
 
-        if (val.length == 0 && key in params) {
+        if (val.length === 0 && key in params) {
             delete reqParams[key];
         } else {
             reqParams[key] = val;
         }
     }
 
-    coat.route(window.location.pathname, reqParams);
-    _publishUpdate(window.location.pathname, reqParams);
+    coat.route(window.location.pathname, reqParams, shouldReplaceHistory);
+    publishUpdate(window.location.pathname, reqParams);
 };
 
 module.exports = {
@@ -1795,14 +1856,14 @@ var map = function(obj, iterator, context) {
 };
 
 var deparam = function(qs) {
-    if(qs.length && qs[0] == "?") {
+    if (qs.length && qs[0] == "?") {
         qs = qs.substring(1);
     }
 
     var deparamed = {};
     var parts = qs.split("&");
 
-    for(var i=0; i<parts.length; i++) {
+    for (var i=0; i<parts.length; i++) {
         var pair = parts[i].split("=");
         // split the key to handle multi arguments
         var key = decodeURIComponent(pair[0]).split("[]")[0], 
@@ -1810,14 +1871,14 @@ var deparam = function(qs) {
             curValue = deparamed[key],
             curType = typeof(curValue);
 
-        // convert a + to %20 which js consider encoding a space
+        // convert '+'' to %20 which js consider encoding a space
         if (value) value = value.replace("+", "%20");
 
         value = decodeURIComponent(value);
 
-        if(curType == "undefined") {
+        if (curType == "undefined") {
             deparamed[key] = value;
-        } else if(curType == "string") {
+        } else if (curType == "string") {
             deparamed[key] = [curValue, value];
         } else {
             curValue.push(value);
@@ -1844,11 +1905,19 @@ function View(options) {
     this._setOptions(options || {});
     this._events = this.domEvents();
 
-    if(this.$el) {
+    // if there is an $el then set the events - this allows TemplatedView's to
+    // not have events bound till after it is rendered on the page
+    if (this.$el) {
         this._delegateEvents();
     }
 };
 
+/*
+set the dom events that the view should listen to. Dom events takes a similar 
+approach to backbone dom events and serves as a way to have event delegation on 
+the view's $el. domEvents returns a mapping of `"[events] [selector]"` to a 
+function on the view that will be called when that event occurs. 
+*/
 View.prototype.domEvents = function() {
     return {};
 };
@@ -1862,17 +1931,21 @@ View.prototype._setOptions = function(options) {
     this.cid = 'view' + (uniqueViewId++);
 };
 
+/*
+returns the DOM nodes that match the selector inside the $el
+@param [String] selector the selector to search for in the lements
+*/
 View.prototype.$ = function(selector) {
     return this.$el.find(selector);
 };
 
 View.prototype.addEvent = function(eventName, selector, method) {
-    if(arguments.length == 2) {
+    if (arguments.length == 2) {
         method = selector;
         selector = null;
     }
 
-    if('string' == typeof(method)) {
+    if ('string' == typeof(method)) {
         method = this[method];
 
         if (!method) {
@@ -1884,7 +1957,7 @@ View.prototype.addEvent = function(eventName, selector, method) {
 
     eventName += '.delegateEvents' + this.cid;
 
-    if(selector) {
+    if (selector) {
         this.$el.on(eventName, selector, method);
     } else {
         this.$el.on(eventName, method);
@@ -1894,16 +1967,16 @@ View.prototype.addEvent = function(eventName, selector, method) {
 };
 
 View.prototype.removeEvent = function(eventName, selector, method) {
-    if(arguments.length == 2) {
+    if (arguments.length == 2) {
         method = selector;
         selector = null;
     }
 
-    if('string' == typeof(method)) {
+    if ('string' == typeof(method)) {
         method = $.proxy(method, this);
     }
 
-    if(selector) {
+    if (selector) {
         this.$el.off(eventName, selector, method);
     } else {
         this.$el.off(eventName, method);
@@ -1913,13 +1986,13 @@ View.prototype.removeEvent = function(eventName, selector, method) {
 };
 
 View.prototype._delegateEvents = function() {
-    if(!this.$el) {
+    if (!this.$el) {
         throw new Error("No $el bound to " + this.constructor.name + " - view can't bind events");
     }
 
     this._undelegateEvents();
 
-    for(var key in this._events) {
+    for (var key in this._events) {
         var match = key.match(delegateEventSplitter),
             eventName = match[1], 
             selector = match[2],
@@ -1943,16 +2016,27 @@ var TemplatedView = function(options) {
 
     this._tempSubviews = {};
     this._subviews = {};
+
+    return this;
 };
 
 TemplatedView.prototype = Object.create(View.prototype);
 
 TemplatedView.prototype.constructor = TemplatedView;
 
+// renders the mithril coat template
 TemplatedView.prototype.render = function() {
     return this.template(this, this.state);
 };
 
+/**
+configurate the dom events for the view - called using the mithril key config
+in the mithril template, by the div that is wrapped around all templated views.
+The elements that are passed in are passed by mithril coat
+@param [Dom Node] element the dom node that was generated
+@param [Boolean] isInit was the initialized
+@param [Object] context the context of the view
+*/
 TemplatedView.prototype._configDomEvents = function(element, isInit, context) {
     // only bind events if the $el on the view doesn't already exist or the elt
     // changes. This way we aren't constantly reconfiguring dom elts on every 
@@ -1964,8 +2048,10 @@ TemplatedView.prototype._configDomEvents = function(element, isInit, context) {
         this._delegateEvents();
     }
 
+    // calling the config func for this view after events have been bound
     this.config(element, isInit, context);
 
+    // clean up references to subviews and unload the subviews
     for (var cid in this._subviews) {
         if (!(cid in this._tempSubviews)) {
             this._subviews[cid]._onunload();
@@ -1979,10 +2065,19 @@ TemplatedView.prototype._configDomEvents = function(element, isInit, context) {
     return this;
 };
 
+/**
+Called each time the view is rendered to the page. By Default returns null
+@param [Dom Node] element the dom node that was generated
+@param [Boolean] isInit was the initialized
+@param [Object] context the context of the view
+*/
 TemplatedView.prototype.config = function(element, isInit, context) {
     return null;
 };
 
+/*
+unloads the given view -> undelegate events, clear the views subviews
+*/
 TemplatedView.prototype._onunload = function() {
     this._undelegateEvents();
     this._clearSubviews();
@@ -1990,15 +2085,25 @@ TemplatedView.prototype._onunload = function() {
     return this;
 };
 
+/*
+called every time the function is unloaded
+*/
 TemplatedView.prototype.onunload = function() {
     return null;
 };
 
+/*
+called by mithril coat template compiler to add a subview to the current view
+*/
 View.prototype._addSubview = function(view) {
     this._tempSubviews[view.cid] = view;
     return this;
 };
 
+
+/*
+clear all of a views subviews. called when a view is unloaded
+*/
 View.prototype._clearSubviews = function() {
     for (var viewName in this._subviews) {
         this._subviews[viewName]._onunload();

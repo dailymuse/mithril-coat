@@ -15,13 +15,13 @@ function Model (options) {
     this._lastRequestId = 0;
 };
 
-// method to ste properties for options
-Model.prototype.setProps = function (options) {
+// method to set mithril coat properties on the model
+Model.prototype.setProps = function(options) {
     this._updateProps(options);
 };
 
 // update model mithril properties on Model object
-Model.prototype._updateProps = function (options) {
+Model.prototype._updateProps = function(options) {
     for (var key in options) {
         // if the key exists then update the mithril property
         if (this[key]) {
@@ -34,16 +34,16 @@ Model.prototype._updateProps = function (options) {
 };
 
 // set the default model properties back to the default
-Model.prototype.setDefaultProps = function (options) {
+Model.prototype.setDefaultProps = function(options) {
     this.setProps(this.options);
 };
 
-// returns all properties on a model as an object
+// returns all properties on a model as an object mapping of keys to values
 Model.prototype.getProps = function() {
     var data = {},
         key = null;
 
-    // loop over all model keys 
+    // loop over all model keys and set the values for the returned object
     for (var i = 0; i < this.modelKeys.length; i++) {
         key = this.modelKeys[i];
         data[key] = this[key]();
@@ -56,8 +56,8 @@ Model.prototype.getProps = function() {
  * function to extend that allows you set xhrconfig status for all
  * mithril requests
  */
-Model.prototype.xhrConfig = function (xhr) {
-    return 
+Model.prototype.xhrConfig = function(xhr) {
+    return null;
 };
 
 /**
@@ -73,7 +73,7 @@ Model.prototype._getUrl = function () {
  * Internal method used to make mithril requests and only submit the correct 
  * request options to mithril
  */
-Model.prototype._request = function (options) {
+Model.prototype._request = function(options) {
     var _this = this,
         url = this._getUrl(),
         requestOpts = {url: url, config: this.xhrConfig, method: options.method},
@@ -122,7 +122,11 @@ Model.prototype._request = function (options) {
         })
 };
 
-Model.prototype.delete = function (options) {
+/* 
+Submits a delete request to the server.
+@param [Object] options the request options for this request
+*/
+Model.prototype.delete = function(options) {
     var options = options ? options : {};
 
     if (!("method" in options)) {
@@ -132,7 +136,11 @@ Model.prototype.delete = function (options) {
     this._request(options);
 };
 
-Model.prototype.get = function (options) {
+/* 
+Submits a get request to the server.
+@param [Object] options the request options for this request
+*/
+Model.prototype.get = function(options) {
     var options = options ? options : {};
 
     if (!("method" in options)) {
@@ -142,9 +150,14 @@ Model.prototype.get = function (options) {
     this._request(options);
 };
 
-Model.prototype.save = function (options) {
+/* 
+Submits a PUT or POST request to the server.
+@param [Object] options the request options for this request
+*/
+Model.prototype.save = function(options) {
     var options = options ? options : {};
 
+    // if the method isn't set and there is id then default to a put 
     if (!("method" in options)) {
         options.method = this.id ? "PUT" : "POST";
     }
