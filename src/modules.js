@@ -1,43 +1,21 @@
-var mithril = require("mithril"),
-    events = require("./event.js");
+var mithril = require("mithril");
 
-function Module(options) {
-    if (options.view) {
-        this._view = options.view;
-    }
-
-    this._setOptions(options);
-
-    events.Events.call(this);
-};
-
-Module.prototype = Object.create(events.Events.prototype);
-
-Module.prototype.constructor = Module;
-
-Module.prototype._setOptions = function(options) {
-    for(var key in options) {
-        if(key !== "view") {
-            this[key] = options[key];
-        }
-    }
-
-    this.options = options;
-};
-
-Module.prototype.activate = function() {
-    var view = this._view;
-
-    return mithril.module(this._view.$el[0], {
+/*
+a convenient wrapper to initialize a mithril module.
+@param [coat.TemplatedView] view a mithril coat view that's used to mount the 
+mithril component
+@param [Function] controllerCb a controller callback that's called in the 
+mithril component controller
+*/
+var initModule = function(view, controllerCb) {
+    return mithril.mount(view.$el[0], {
         controller: function() {
-            return;
+            if (controllerCb) controllerCb();
         }, 
         view: function() {
             return view.render();
         }
     });
-};
+}
 
-module.exports = {
-    Module: Module
-};
+module.exports = initModule;

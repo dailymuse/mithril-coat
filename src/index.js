@@ -7,7 +7,7 @@ var util = require("./util"),
     mithril = require("mithril"),
     PubSub = require("pubsub-js");
 
-var VERSION = "0.1.3";
+var VERSION = "0.2.0";
 
 options = {}
 
@@ -21,7 +21,6 @@ module.exports = {
     // Utils
     map: util.map,
     deparam: util.deparam,
-    captureEvents: util.captureEvents,
 
     // Views
     View: views.View,
@@ -30,14 +29,17 @@ module.exports = {
     // Controllers
     Controller: controllers.Controller,
 
-    // Module
-    Module: modules.Module,
-
     // Model
     Model: model.Model,
 
+    // Module
+    initModule: modules,
+
     // Router
-    Router: router.Router,
+    getParams: router.getParams,
+    setRoutes: router.setRoutes,
+    updateRoute: router.updateRoute,
+    updateParams: router.updateParams,
 
     // PubSub
     unsubscribe: PubSub.unsubscribe,
