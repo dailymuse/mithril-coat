@@ -1473,7 +1473,7 @@ var util = _dereq_("./util"),
     mithril = _dereq_("mithril"),
     PubSub = _dereq_("pubsub-js");
 
-var VERSION = "0.2.0";
+var VERSION = "0.2.1";
 
 options = {}
 
@@ -1862,6 +1862,7 @@ var deparam = function(qs) {
 
     var deparamed = {};
     var parts = qs.split("&");
+    var regexForSpaces = /\+/gi;
 
     for (var i=0; i<parts.length; i++) {
         var pair = parts[i].split("=");
@@ -1872,7 +1873,7 @@ var deparam = function(qs) {
             curType = typeof(curValue);
 
         // convert '+'' to %20 which js consider encoding a space
-        if (value) value = value.replace("+", "%20");
+        if (value) value = value.replace(regexForSpaces, "%20");
 
         value = decodeURIComponent(value);
 
