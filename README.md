@@ -173,7 +173,7 @@ model.setProps({
    updatedVersion: 2.0
 });
 
-console.log(model.updatedVersion) // 2.0
+console.log(model.updatedVersion()) // prints 2.0
 ```
 
 ### model.getProps()
