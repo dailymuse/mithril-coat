@@ -730,7 +730,6 @@ var m = (function app(window, undefined) {
 
 			var shouldReplaceHistoryEntry = (arguments.length === 3 ? arguments[2] : arguments[1]) === true || oldRoute === currentRoute;
 
-
 			if (window.history.pushState) {
 				computePreRedrawHook = setScroll
 				computePostRedrawHook = function() {
@@ -842,7 +841,7 @@ var m = (function app(window, undefined) {
 		return params
 	}
 	m.route.parseQueryString = parseQueryString
-
+	
 	function reset(root) {
 		var cacheKey = getCellCacheKey(root);
 		clear(root.childNodes, cellCache[cacheKey]);
@@ -989,7 +988,7 @@ var m = (function app(window, undefined) {
 	m.deferred.onerror = function(e) {
 		if (type.call(e) === "[object Error]" && !e.constructor.toString().match(/ Error/)) {
 			pendingRequests = 0;
-			throw e;
+			throw e
 		}
 	};
 
@@ -1180,12 +1179,13 @@ https://github.com/mroderick/PubSubJS
         // CommonJS
         factory(exports);
 
-    } else {
-        // Browser globals
-        var PubSub = {};
-        root.PubSub = PubSub;
-        factory(PubSub);
     }
+
+    // Browser globals
+    var PubSub = {};
+    root.PubSub = PubSub;
+    factory(PubSub);
+    
 }(( typeof window === 'object' && window ) || this, function (PubSub){
 	'use strict';
 
@@ -1454,6 +1454,8 @@ Controller.prototype.autoredraw = function(cb, opts) {
 
     try {
         cb.bind(this)(opts);
+    } catch (e) {
+        coat.publishSync("autoredraw-error", e);
     } finally {
         mithril.endComputation();
     }
