@@ -43,6 +43,8 @@ Controller.prototype.autoredraw = function(cb, opts) {
 
     try {
         cb.bind(this)(opts);
+    } catch (e) {
+        coat.publishSync("autoredraw-error", e);
     } finally {
         mithril.endComputation();
     }

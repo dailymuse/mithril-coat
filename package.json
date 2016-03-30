@@ -11,7 +11,9 @@
     "build": "browserify src/index.js -o build/coat.js -s coat",
     "prebuild": "mkdir -p build",
     "postbuild": "cd build && uglifyjs coat.js -o coat.min.js --source-map coat.min.map",
-    "test": "node bin/coat.js test/test.html test/test.js"
+    "test": "node bin/coat.js test/test.html test/test.js",
+    "version": "npm run build && git add -A",
+    "postversion": "git push && git push --tags"
   },
   "repository": {
     "type": "git",
