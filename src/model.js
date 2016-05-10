@@ -129,9 +129,10 @@ Submits a delete request to the server.
 Model.prototype.delete = function(options) {
     var options = options ? options : {};
 
-    if (!("method" in options)) {
-        options.method = "DELETE";
+    if ("method" in options && options.method !== "DELETE") {
+        throw "You are trying to call the delete() method with the method option already set to another method type. This is probably not what you want."
     }
+    options.method = "DELETE"; 
 
     this._request(options);
 };
@@ -143,9 +144,10 @@ Submits a get request to the server.
 Model.prototype.get = function(options) {
     var options = options ? options : {};
 
-    if (!("method" in options)) {
-        options.method = "GET";
+    if ("method" in options && options.method !== "GET") {
+        throw "You are trying to call the get() method with the method option already set to another method type. This is probably not what you want."
     }
+    options.method = "GET";
 
     this._request(options);
 };
@@ -158,9 +160,12 @@ Model.prototype.save = function(options) {
     var options = options ? options : {};
 
     // if the method isn't set and there is id then default to a put 
-    if (!("method" in options)) {
-        options.method = this.id ? "PUT" : "POST";
+    if ("method" in options) && (options.mehtod !== "POST" || options.method !== "PUT") {
+        throw "You are trying to call the save() method with the method option set to something besides PUT or POST. This is probably not what you want."
     }
+    // POST is used to create new object, and PUT updates an existing object.
+    // So we checkt to see if an object id is given to determine between the two methods
+    options.method = this.id ? "PUT" : "POST";
 
     this._request(options);
 };
