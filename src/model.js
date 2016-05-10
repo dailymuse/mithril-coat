@@ -1,3 +1,8 @@
+/*  Mithril coat models reprsent the state of data.
+    The data is represented by properties.
+    Models can send requests to the server to retrieve or update a server-side model.
+*/
+
 var mithril = require("mithril");
 
 MITHRIL_REQUEST_OPTS = ["user", "password", "data", "background", "initialValue", "unwrapSuccess", "unwrapError", "serialize", "extract", "type"]
@@ -5,7 +10,7 @@ MITHRIL_REQUEST_OPTS = ["user", "password", "data", "background", "initialValue"
 function Model (options) {
     this.options = options;
 
-   // model keys is an array of all model keys on the object
+    // model keys is an array of all model keys on the object
     this.modelKeys = [];
     this._updateProps(options);
 
@@ -33,7 +38,7 @@ Model.prototype._updateProps = function(options) {
     }
 };
 
-// set the default model properties back to the default
+// set the default model properties back to their default value
 Model.prototype.setDefaultProps = function(options) {
     this.setProps(this.options);
 };
@@ -88,7 +93,7 @@ Model.prototype._request = function(options) {
 
     /**
      * set the request to loading - allows for more fine grained control for 
-     * happens during loading
+     * what happens during loading
      */
     this.loading(true);
     // make request and update model props
@@ -123,7 +128,7 @@ Model.prototype._request = function(options) {
 };
 
 /* 
-Submits a delete request to the server.
+Submits a DELETE request to the server.
 @param [Object] options the request options for this request
 */
 Model.prototype.delete = function(options) {
