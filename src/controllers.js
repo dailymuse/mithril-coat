@@ -1,6 +1,13 @@
-var mithril = require("mithril"),
-    PubSub = require("pubsub-js");;
+/*  Controller class
+    Mithril Coat controllers subscribe to events, and take action when the event is triggered.
+    They can then manipulate models in response to this event.
+    Controllers are also able to cause a redraw to happen with `autoredraw`.
+*/
 
+var mithril = require("mithril"),
+    PubSub = require("pubsub-js");
+
+// Constructor for Controller
 function Controller(obj) {
     this._setOptions(obj);
     this._events = this.events();
@@ -18,6 +25,7 @@ Controller.prototype._setOptions = function(options) {
 };
 
 // the events to be bound to pubsub-js
+// An object mapping from strings (event names) to callbacks to be executed when that event is received
 Controller.prototype.events = function() {
     return {};
 };
