@@ -82,7 +82,9 @@ Model.prototype._request = function(options) {
     var _this = this,
         url = this._getUrl(),
         requestOpts = {url: url, config: this.xhrConfig, method: options.method},
-        requestId = ++this._lastRequestId;
+        requestId = this._lastRequestId + 1;
+
+    this._lastRequestId++;
 
     // only add an option if it is allowed by mithril
     for (var key in options) {
