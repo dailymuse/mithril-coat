@@ -49,7 +49,7 @@ View.prototype.addEvent = function(eventName, selector, method) {
         selector = null;
     }
 
-    if ('string' == typeof(method)) {
+    if (typeof(method) === "string") {
         method = this[method];
 
         if (!method) {
@@ -59,7 +59,7 @@ View.prototype.addEvent = function(eventName, selector, method) {
         method.bind(this);
     }
 
-    eventName += '.delegateEvents' + this.cid;
+    eventName += ".delegateEvents" + this.cid;
 
     if (selector) {
         this.$el.on(eventName, selector, method);
@@ -71,12 +71,12 @@ View.prototype.addEvent = function(eventName, selector, method) {
 };
 
 View.prototype.removeEvent = function(eventName, selector, method) {
-    if (arguments.length == 2) {
+    if (arguments.length === 2) {
         method = selector;
         selector = null;
     }
 
-    if ('string' == typeof(method)) {
+    if (typeof(method) === "string") {
         method = $.proxy(method, this);
     }
 

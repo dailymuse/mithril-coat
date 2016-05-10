@@ -1,12 +1,12 @@
 var map = function(obj, iterator, context) {
-    if (obj == null) {
-        return results;
+    if (obj === null) {
+        return null;
     } else if (Array.prototype.map && obj.map === Array.prototype.map) {
         return obj.map(iterator, context);
     } else {
         var results = [];
 
-        if(obj.length === +obj.length) {
+        if (obj.length === +obj.length) {
             for(var i=0; i<obj.length; i++) {
                 results.push(iterator.call(context, obj[i], i, obj));
             }
@@ -20,8 +20,12 @@ var map = function(obj, iterator, context) {
     }
 };
 
+/*  Converts a query string into an object mapping keys to values.
+    Duplicate key names are accepted, in which case the values for that key
+    are concatenated into a list.
+*/
 var deparam = function(qs) {
-    if (qs.length && qs[0] == "?") {
+    if (qs.length && qs[0] === "?") {
         qs = qs.substring(1);
     }
 
@@ -33,21 +37,21 @@ var deparam = function(qs) {
         var pair = parts[i].split("=");
         // split the key to handle multi arguments
         var key = decodeURIComponent(pair[0]).split("[]")[0], 
-            value = pair[1],
+            newValue = pair[1],
             curValue = deparamed[key],
             curType = typeof(curValue);
 
         // convert '+'' to %20 which js consider encoding a space
-        if (value) value = value.replace(regexForSpaces, "%20");
+        if (newValue) newValue = newValue.replace(regexForSpaces, "%20");
 
-        value = decodeURIComponent(value);
+        newValue = decodeURIComponent(newValue);
 
-        if (curType == "undefined") {
-            deparamed[key] = value;
-        } else if (curType == "string") {
-            deparamed[key] = [curValue, value];
+        if (curType === "undefined") {
+            deparamed[key] = newValue;
+        } else if (curType === "string") { // this key has multiple values, so make them into a list
+            deparamed[key] = [curValue, newValue];
         } else {
-            curValue.push(value);
+            curValue.push(newValue);
         }
     }
 

@@ -34,7 +34,7 @@ Mithril Coat Views are very similar to [Backbone](http://backbonejs.org/) and pr
 1. Base Views - coat.View
 2. Templated Views - coat.TemplatedView 
 
-### new coat.View({})
+### `new coat.View({})`
 Base Views provide a number of convenience methods for interacting with existing dom nodes. 
 
 All views expect to be initialized with a `$el` key and value.
@@ -45,7 +45,7 @@ var view = new coat.View({
 })
 ```
 
-#### coat.View.prototype.domEvents()
+#### `coat.View.prototype.domEvents()`
 Dom events takes a similar approach to Backbone dom events and serves as a way to have event delegation on the view's $el. 
 
 domEvents returns a mapping of `"[events] [selector]": "functionOnView"`. 
@@ -62,10 +62,10 @@ view.prototype.onClickLink = function(e) {
 }
 ```
 
-#### coat.View.prototype.$(jquerySelector)
-returns a jQuery selector that match the selector inside the $el.
+#### `coat.View.prototype.$(jquerySelector)`
+returns a jQuery selector that match the selector inside the `$el`.
 
-### new coat.TemplatedView({})
+### `new coat.TemplatedView({})`
 Extends coat.View and adds additional functionality for views that use Mithril templates. 
 
 All `coat.TemplatedView` expect a `template` property on instantiation. This will be the template that the view renders. 
@@ -90,21 +90,21 @@ var templatedView = new coat.TemplatedView({
 })
 ```
 
-#### coat.TemplatedView.prototype.render()
+#### `coat.TemplatedView.prototype.render()`
 Should be called to render the Mithril template.
 
-#### coat.TemplatedView.prototype.config(element, isInit, context) 
+#### `coat.TemplatedView.prototype.config(element, isInit, context)` 
 The config method is called whenever the current template is rendered to the page.
 
 NOTE: these arguments are the same as Mithril passes to the [config attribute](https://lhorie.github.io/Mithril/Mithril.html#the-config-attribute).
 
-#### coat.TemplatedView.prototype.onunload()
+#### `coat.TemplatedView.prototype.onunload()`
 The current templated view was unloaded. Can be used if you need to call methods on a third party library when a view is unloaded. 
 
 ## Controllers
 Mithril Coat controllers are meant to be used to manipulate Models and to initiate Mithril redraws (either via Model requests or via autoredraws). 
 
-### new coat.Controller({})
+### `new coat.Controller({})`
 Controllers do not take any default arguments.
 
 ```javascript
@@ -115,7 +115,7 @@ var controller = new coat.Controller({
 })
 ```
 
-#### coat.Controller.prototype.events()
+#### `coat.Controller.prototype.events()`
 Events are bound to a module using Pubsub-js, which is a global pubsub system and therefore events are not Module specific. Modules expect the events to return an object mapping of event names to functions to call when the event is published.
 
 Controller events can be published via `coat.publish('some-event-name')` or `coat.publishSync('some-event-name')`. To see the differences between `publish` and `publishSync` please checkout pubsub-js. Views should typically be the ones that publish controller events, although there are exceptions (like when a controller wants to interact with another controller, or in a components controller function).
@@ -132,7 +132,7 @@ controller.prototype.buttonClicked = function() {
 }
 ```
 
-#### coat.Controller.prototype.autoredraw(cb, opts)
+#### `coat.Controller.prototype.autoredraw(cb, opts)`
 Redraws a view using Mithril's `startComputation()` and `endComputation` in a try, finally block as recommended by Mithril. Calls the callback and passes opts as an argument to the callback. 
 
 ```javascript
@@ -148,7 +148,7 @@ controller.prototype.buttonClicked = function() {
 ## Models 
 Mithril Coat models provide convenience methods for interacting with Mithril models. And dealing with state thorughout your application.
 
-### new coat.Model({})
+### `new coat.Model({})`
 All keys and values that are passed in the opts object are set as properties on the Model as Mithril props respectively. 
 
 ```javascript
@@ -165,7 +165,7 @@ There are also some keys that are available on every model:
 * `this.loading()` a boolean Mithril prop that indicates that the model is currently being requested. Mithril Coat automatically sets this the value of this property. It can be used to show a loading spinner in a templated view.
 * `this.requestError()` a boolean Mithril prop that indicates whether there was a request error
 
-### model.setProps({})
+### `model.setProps({})`
 Method to set properties on the model. Accepts a key value object that are set as Mithril props on the model.
 
 ```javascript
@@ -176,11 +176,11 @@ model.setProps({
 console.log(model.updatedVersion()) // prints 2.0
 ```
 
-### model.getProps()
+### `model.getProps()`
 Returns all the Mithril properties on the model as an object mapping key to value.
 
-### model.url || model.url()
-the url can be set as a property on the Model oras a function. It should return a url string to request
+### `model.url || model.url()`
+the url can be set as a property on the Model or as a function. It should return a url string to request
 
 ```javascript
 model.prototype.url = function() {
@@ -188,7 +188,7 @@ model.prototype.url = function() {
 }
 ```
 
-### model.xhrConfig(xhr) 
+### `model.xhrConfig(xhr)`
 This function should be extended if it is necessary to configure the xhr request.
 
 ```javascript
@@ -199,7 +199,7 @@ model.prototype.xhrConfig = function(xhr) {
 ```
 
 ### Model Requests
-In addition to allowing you to set the underlying xhr requests - Mithril Coat provides a few other convenience methods. All method calls accept an object of key values. Possible keys that Mithril Coat will place in the options m.request include:
+In addition to allowing you to set the underlying xhr requests - Mithril Coat provides a few other convenience methods. All method calls accept an object of key values. Possible keys that Mithril Coat will place in the options `m.request` include:
 
 * "user" 
 * "password"
@@ -214,8 +214,8 @@ In addition to allowing you to set the underlying xhr requests - Mithril Coat pr
 
 Mithril Coat also allows you to pass in `success` and `error` keys that are mapping to function callbacks. Each callback receives two arguments `success: function(response, model)` where the response is the response from the server and the model is the current requested model. 
 
-#### model.get({}})
-Submits a get request and optionally specifies the method to use in opts
+#### `model.get({}})`
+Submits a get request
 
 ``` javascript
 model.get({
@@ -228,19 +228,19 @@ model.get({
 })
 ```
 
-#### model.save({})
+#### `model.save({})`
 By default if a `"method"` key is not set in opts and an id is set on the model then Mithril Coat will set the method request to `"PUT"` and if there is not id it will set the method request to `"POST"`. However there are times when you should submit a `"PUT"` request even though an id exists - therefore we provide the flexibility to determine which method to use. 
 
-#### model.delete({})
+#### `model.delete({})`
 Submits a delete request to the server.
 
 ## Routing and Modules
 Mithril Coat provides some nice utility methods that wrap around Mithril's routing and components. 
 
-### coat.setRoutes($rootEl, routes)
+### `coat.setRoutes($rootEl, routes)`
 Sets the Mithril Coat routes for the single page application. Mithril Coat sets Mithril to route on the pathname.
 
-`$rooEl` is a jQuery object in which the the Mithril templates will be rendered. `routes` should be an object mapping route names to Mithril a component (`{controller: function() {}, view: () -> console.log('render some view here via view.render()')}`).
+`$rootEl` is a jQuery object in which the the Mithril templates will be rendered. `routes` should be an object mapping route names to Mithril components (`{controller: function() {}, view: () -> console.log('render some view here via view.render()')}`).
 
 ```javascript
 template = require("./some_template.coat")
@@ -263,7 +263,7 @@ coat.setRoutes($("body"), {
 })
 ```
 
-### coat.getParams()
+### `coat.getParams()`
 Gets the current query parameters in the url. This function can only be called after `coat.setRoutes` has been called. Returns a mapping of query parameter keys to their respective values.
 
 ### coat.updateRoute(route, params, shouldReplaceHistory)
@@ -271,12 +271,12 @@ Routes to the new route and the query parameters listed.
 
 `route` should be a string representing the new path. `params` should be an object mapping of query parameter keys to values. `shouldReplaceHistory` is a boolean whether the history should be replaced. 
 
-### coat.updateParams(params, shouldReplaceHistory)
+### `coat.updateParams(params, shouldReplaceHistory)`
 Is a convenience method that allows you to update a select group of query parameters. Sometimes you may have 10+ query parameters, but you only are routing to update a value or two. Furthermore you may not want to have to deal with the existing params object. This is just a convenience method that can be used to update select query parameters. 
 
 `params` should be an object mapping of query parameter keys to values that you want to update. `shouldReplaceHistory` is a boolean whether the history should be replaced. 
 
-### coat.initModule(view, controllerCb)
+### `coat.initModule(view, controllerCb)`
 A convenient wrapper to initialize a mithirl component. 
 
 ``` javascript
