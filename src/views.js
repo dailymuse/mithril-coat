@@ -97,6 +97,8 @@ View.prototype._delegateEvents = function() {
     this._undelegateEvents();
 
     for (var key in this._events) {
+        if(!this[this._events[key]])
+            throw new Error("Trying to bind the " + key + " event to the '" + this._events[key] + "' function but the function has not been declared.")
         var match = key.match(delegateEventSplitter),
             eventName = match[1], 
             selector = match[2],
