@@ -14,9 +14,9 @@ module.exports = function(view, state) {
 		coat.trust("'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'"),
 		(function() {
 			view._template = true;
-			var template = require("./foo.js")(view, state);
+			var template = require("./foo.coat")(view, state);
 			view._template = false;
-			return template
+			return template;
 		}).call(this),
 		(function() {
 			var newView = new view.ButtonView({state: state.subModel});
