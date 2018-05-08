@@ -724,11 +724,11 @@ var m = (function app(window, undefined) {
 			var queryIndex = currentRoute.indexOf("?")
 			var params = queryIndex > -1 ? parseQueryString(currentRoute.slice(queryIndex + 1)) : {}
 			for (var i in args) params[i] = args[i]
-			var querystring = m.route.buildQueryString(params)
+			var querystring = buildQueryString(params)
 			var currentPath = queryIndex > -1 ? currentRoute.slice(0, queryIndex) : currentRoute
 			if (querystring) currentRoute = currentPath + (currentPath.indexOf("?") === -1 ? "?" : "&") + querystring;
 
-			var shouldReplaceHistoryEntry = (arguments.length === 3 ? arguments[2] : arguments[1]) === true || oldRoute === currentRoute;
+			var shouldReplaceHistoryEntry = (arguments.length === 3 ? arguments[2] : arguments[1]) === true || oldRoute === arguments[0];
 
 			if (window.history.pushState) {
 				computePreRedrawHook = setScroll
@@ -802,7 +802,7 @@ var m = (function app(window, undefined) {
 		if (m.route.mode != "hash" && $location.hash) $location.hash = $location.hash;
 		else window.scrollTo(0, 0)
 	}
-	m.route.buildQueryString = function(object, prefix) {
+	function buildQueryString(object, prefix) {
 		var duplicates = {}
 		var str = []
 		for (var prop in object) {
@@ -810,7 +810,7 @@ var m = (function app(window, undefined) {
 			var value = object[prop]
 			var valueType = type.call(value)
 			var pair = (value === null) ? encodeURIComponent(key) :
-				valueType === OBJECT ? m.route.buildQueryString(value, key) :
+				valueType === OBJECT ? buildQueryString(value, key) :
 				valueType === ARRAY ? value.reduce(function(memo, item) {
 					if (!duplicates[key]) duplicates[key] = {}
 					if (!duplicates[key][item]) {
@@ -840,6 +840,7 @@ var m = (function app(window, undefined) {
 		}
 		return params
 	}
+	m.route.buildQueryString = buildQueryString
 	m.route.parseQueryString = parseQueryString
 	
 	function reset(root) {
@@ -986,10 +987,7 @@ var m = (function app(window, undefined) {
 		}
 	}
 	m.deferred.onerror = function(e) {
-		if (type.call(e) === "[object Error]" && !e.constructor.toString().match(/ Error/)) {
-			pendingRequests = 0;
-			throw e
-		}
+		if (type.call(e) === "[object Error]" && !e.constructor.toString().match(/ Error/)) throw e
 	};
 
 	m.sync = function(args) {
@@ -1059,7 +1057,7 @@ var m = (function app(window, undefined) {
 				+ (options.url.indexOf("?") > 0 ? "&" : "?")
 				+ (options.callbackKey ? options.callbackKey : "callback")
 				+ "=" + callbackKey
-				+ "&" + m.route.buildQueryString(options.data || {});
+				+ "&" + buildQueryString(options.data || {});
 			$document.body.appendChild(script)
 		}
 		else {
@@ -1093,7 +1091,7 @@ var m = (function app(window, undefined) {
 	function bindData(xhrOptions, data, serialize) {
 		if (xhrOptions.method === "GET" && xhrOptions.dataType != "jsonp") {
 			var prefix = xhrOptions.url.indexOf("?") < 0 ? "?" : "&";
-			var querystring = m.route.buildQueryString(data);
+			var querystring = buildQueryString(data);
 			xhrOptions.url = xhrOptions.url + (querystring ? prefix + querystring : "")
 		}
 		else xhrOptions.data = serialize(data);
